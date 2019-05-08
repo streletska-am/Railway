@@ -1,0 +1,20 @@
+[
+  {
+    "_id": ObjectId("5bfaa39dd52d4832fb9b2344"),
+    "email": "root",
+    "password": "63a9f0ea7bb98050796b649e85481845",
+    "name": "Admin",
+    "surname": "Admin",
+    "phone": "0",
+    "admin": true
+  },
+  {
+    "_id": ObjectId("5bfaa39dd52d4832fb9b2345"),
+    "email": "andy97@ukr.net",
+    "password": "63a9f0ea7bb98050796b649e85481845",
+    "name": "Andrii",
+    "surname": "Yashin",
+    "phone": "0663533848",
+    "admin": false
+  }
+]
