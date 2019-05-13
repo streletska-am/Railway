@@ -2,6 +2,7 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.StationDAO;
+import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Station;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -43,7 +44,16 @@ public class MongoDbStationDAO implements StationDAO {
 
     @Override
     public Station create(Station station) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        Document document = new Document();
+        document.put(LABEL_NAME, station.getName());
+        collection.insertOne(document);
+
+        station.setId(document.getObjectId(LABEL_ID).toHexString());
+        LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, station.getId()));
+        return station;
     }
 
     @Override

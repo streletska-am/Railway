@@ -12,12 +12,12 @@ public class MongoDbFactory implements DAOFactory {
 
     @Override
     public PriceDAO createPriceDAO() {
-        return null;
+        return MongoDbPriceDAO.getInstance();
     }
 
     @Override
     public RequestDAO createRequestDAO() {
-        return null;
+        return MongoDbRequestDAO.getInstance();
     }
 
     @Override
@@ -26,8 +26,7 @@ public class MongoDbFactory implements DAOFactory {
     }
 
     @Override
-    public TrainDAO createTrainDAO() {
-        return null;
+    public TrainDAO createTrainDAO() { return MongoDbTrainDAO.getInstance();
     }
 
     @Override

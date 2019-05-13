@@ -60,7 +60,21 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     @Override
     public Route create(Route route) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        Document document = new Document();
+        document.put(LABEL_PRICE_ID, route.getPriceId());
+        document.put(LABEL_FROM_ID, route.getFromId());
+        document.put(LABEL_TO_ID, route.getToId());
+        document.put(LABEL_FROM_TIME, route.getFromTime());
+        document.put(LABEL_TO_TIME, route.getToTime());
+        document.put(LABEL_DISTANCE, route.getDistance());
+        collection.insertOne(document);
+
+        route.setId(document.getObjectId(LABEL_ID).toHexString());
+        LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, route.getId()));
+        return route;
     }
 
     @Override
@@ -72,6 +86,7 @@ public class MongoDbRouteDAO implements RouteDAO {
     public void delete(Route route) {
 
     }
+    private List<Route> findByParameter(String label, Long parameter){return null;}
 
     private Route getRoute(Document document) {
         Route result = new Route();

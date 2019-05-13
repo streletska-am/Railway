@@ -1,0 +1,56 @@
+[
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236a"),
+    "from_time": "2017-07-01 12:45:00",
+    "to_time": "2017-07-01 23:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b235a"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b234e"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b2350"),
+    "distance": 300.0
+  },
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236e"),
+    "from_time": "2017-07-01 14:30:00",
+    "to_time": "2017-07-01 22:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b235a"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b2350"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b234e"),
+    "distance": 300.0
+  },
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236d"),
+    "from_time": "2017-07-01 23:45:00",
+    "to_time": "2017-07-02 05:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b2359"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b234e"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b234f"),
+    "distance": 500.0
+  },
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236f"),
+    "from_time": "2017-07-01 11:12:00",
+    "to_time": "2017-07-01 17:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b2359"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b234f"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b234e"),
+    "distance": 500.0
+  },
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236b"),
+    "from_time": "2017-07-01 06:12:00",
+    "to_time": "2017-07-01 14:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b235b"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b2350"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b2351"),
+    "distance": 800.0
+  },
+  {
+    "_id": ObjectId("5bfaab57d52d4832fb9b236c"),
+    "from_time": "2017-07-01 05:12:00",
+    "to_time": "2017-07-01 16:00:00",
+    "price_id": ObjectId("5bfaa65cd52d4832fb9b2359"),
+    "from_id": ObjectId("5bfaa4a9d52d4832fb9b2351"),
+    "to_id": ObjectId("5bfaa4a9d52d4832fb9b2350"),
+    "distance": 800.0
+  }
+]
