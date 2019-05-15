@@ -18,9 +18,9 @@ public class MongoDbRequestDAO implements RequestDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbRequestDAO.class.getName());
     private static final MongoDbRequestDAO INSTANCE = new MongoDbRequestDAO();
 
-    private static final String COLLECTION_NAME = "request";
+    private static final String COLLECTION_NAME = "requests";
 
-    private static final String LABEL_ID = "id";
+    private static final String LABEL_ID = "_id";
     private static final String LABEL_USER_ID = "user_id";
     private static final String LABEL_TRAIN_ID = "train_id";
     private static final String LABEL_TYPE = "type";
@@ -96,7 +96,8 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     private Request getRequest(Document document){
         Request request = new Request();
-        request.setId(document.getObjectId(LABEL_ID).toHexString());
+        System.out.println(document);
+        request.setId(document.get(LABEL_ID).toString());
         request.setTrainId(document.getString(LABEL_TRAIN_ID));
         request.setUserId(document.getString(LABEL_USER_ID));
         request.setPrice(document.getDouble(LABEL_PRICE));

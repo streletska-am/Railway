@@ -17,9 +17,9 @@ public class MongoDbTrainDAO implements TrainDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbTrainDAO.class.getName());
     private static final MongoDbTrainDAO INSTANCE = new MongoDbTrainDAO();
 
-    private static final String COLLECTION_NAME = "train";
+    private static final String COLLECTION_NAME = "trains";
 
-    private static final String LABEL_ID = "id";
+    private static final String LABEL_ID = "_id";
     private static final String LABEL_ROUTE_ID = "route_id";
     private static final String LABEL_COMPARTMENT_FREE = "compartment_free";
     private static final String LABEL_BERTH_FREE = "berth_free";

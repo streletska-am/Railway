@@ -16,9 +16,9 @@ import static com.mongodb.client.model.Filters.eq;
 public class MongoDbPriceDAO implements PriceDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbPriceDAO.class.getName());
     private static final MongoDbPriceDAO INSTANCE = new MongoDbPriceDAO();
-    private static final String COLLECTION_NAME = "price";
+    private static final String COLLECTION_NAME = "prices";
 
-    private static final String LABEL_ID = "id";
+    private static final String LABEL_ID = "_id";
     private static final String LABEL_BERTH_FACTOR = "berth_factor";
     private static final String LABEL_COMPARTMENT_FACTOR = "compartment_factor";
     private static final String LABEL_DELUXE_FACTOR = "deluxe_factor";
