@@ -109,10 +109,10 @@ public class MongoDbTrainDAO implements TrainDAO {
         Train result = new Train();
 
         result.setId(document.getObjectId(LABEL_ID).toHexString());
-        result.setRouteId(document.getString(LABEL_ROUTE_ID));
-        result.setBerthFree(document.getLong(LABEL_BERTH_FREE));
-        result.setCompartmentFree(document.getLong(LABEL_COMPARTMENT_FREE));
-        result.setDeluxeFree(document.getLong(LABEL_DELUXE_FREE));
+        result.setRouteId(document.getObjectId(LABEL_ROUTE_ID).toHexString());
+        result.setBerthFree((long) document.getInteger(LABEL_BERTH_FREE));
+        result.setCompartmentFree((long) document.getInteger(LABEL_COMPARTMENT_FREE));
+        result.setDeluxeFree((long) document.getInteger(LABEL_DELUXE_FREE));
 
         return result;
     }

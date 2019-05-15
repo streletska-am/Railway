@@ -97,10 +97,10 @@ public class MongoDbRequestDAO implements RequestDAO {
     private Request getRequest(Document document){
         Request request = new Request();
         System.out.println(document);
-        request.setId(document.get(LABEL_ID).toString());
-        request.setTrainId(document.getString(LABEL_TRAIN_ID));
-        request.setUserId(document.getString(LABEL_USER_ID));
-        request.setPrice(document.getDouble(LABEL_PRICE));
+        request.setId(document.getObjectId(LABEL_ID).toHexString());
+        request.setTrainId(document.getObjectId(LABEL_TRAIN_ID).toHexString());
+        request.setUserId(document.getObjectId(LABEL_USER_ID).toHexString());
+        request.setPrice((double) document.getInteger(LABEL_PRICE));
         request.setType(TypePlace.valueOf(document.getString(LABEL_TYPE)));
         return request;
     }
