@@ -6,9 +6,13 @@ import dao.mysql.TypePlace;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Request;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDbRequestDAO implements RequestDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbRequestDAO.class.getName());
@@ -31,12 +35,25 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     @Override
     public List<Request> findAll() {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+        List<Request> requests = new ArrayList<>((int) collection.count());
+
+        for (Document document : collection.find()) {
+            requests.add(getRequest(document));
+        }
+
+        LOG.info(LogMessageDAOUtil.createInfoFindAll(COLLECTION_NAME));
+        return requests;
     }
 
     @Override
     public Request findById(String id) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        return getRequest(document);
     }
 
     @Override
@@ -58,12 +75,23 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     @Override
     public Request update(Request request) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(request.getId())), new Document("$set", request));
+
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, request.getId()));
+        return request;
     }
 
     @Override
     public void delete(Request request) {
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
 
+        collection.deleteOne(eq(LABEL_ID, new ObjectId(request.getId())));
+
+        LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, request.getId()));
     }
 
     private Request getRequest(Document document){

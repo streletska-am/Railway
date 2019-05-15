@@ -5,9 +5,13 @@ import dao.TrainDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Train;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDbTrainDAO implements TrainDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbTrainDAO.class.getName());
@@ -27,19 +31,40 @@ public class MongoDbTrainDAO implements TrainDAO {
     static MongoDbTrainDAO getInstance() {
         return INSTANCE;
     }
+
     @Override
     public List<Train> findAll() {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+        List<Train> trains = new ArrayList<>((int) collection.count());
+
+        for (Document document : collection.find()) {
+            trains.add(getTrain(document));
+        }
+
+        LOG.info(LogMessageDAOUtil.createInfoFindAll(COLLECTION_NAME));
+        return trains;
     }
 
     @Override
     public List<Train> findByRoute(String route_id) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+        List<Train> trains = new ArrayList<>((int) collection.count());
+
+        for (Document document : collection.find(eq(LABEL_ROUTE_ID, route_id))) {
+            trains.add(getTrain(document));
+        }
+        return trains;
     }
 
     @Override
     public Train findById(String id) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        return getTrain(document);
     }
 
     @Override
@@ -61,12 +86,23 @@ public class MongoDbTrainDAO implements TrainDAO {
 
     @Override
     public Train update(Train train) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(train.getId())), new Document("$set", train));
+
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, train.getId()));
+        return train;
     }
 
     @Override
     public void delete(Train train) {
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
 
+        collection.deleteOne(eq(LABEL_ID, new ObjectId(train.getId())));
+
+        LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, train.getId()));
     }
 
     private Train getTrain(Document document) {

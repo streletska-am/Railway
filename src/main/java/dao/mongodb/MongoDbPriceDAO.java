@@ -2,14 +2,16 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.PriceDAO;
-import dao.RequestDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Price;
-import model.entity.Request;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDbPriceDAO implements PriceDAO {
     private static final Logger LOG = Logger.getLogger(MongoDbPriceDAO.class.getName());
@@ -42,12 +44,25 @@ public class MongoDbPriceDAO implements PriceDAO {
 
     @Override
     public List<Price> findAll() {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+        List<Price> prices = new ArrayList<>((int) collection.count());
+
+        for (Document document : collection.find()) {
+            prices.add(getPrice(document));
+        }
+
+        LOG.info(LogMessageDAOUtil.createInfoFindAll(COLLECTION_NAME));
+        return prices;
     }
 
     @Override
     public Price findById(String id) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        return getPrice(document);
     }
 
     @Override
@@ -68,11 +83,22 @@ public class MongoDbPriceDAO implements PriceDAO {
 
     @Override
     public Price update(Price price) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(price.getId())), new Document("$set", price));
+
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, price.getId()));
+        return price;
     }
 
     @Override
     public void delete(Price price) {
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
 
+        collection.deleteOne(eq(LABEL_ID, new ObjectId(price.getId())));
+
+        LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, price.getId()));
     }
 }

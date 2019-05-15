@@ -7,6 +7,7 @@ import model.entity.Station;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -30,7 +31,16 @@ public class MongoDbStationDAO implements StationDAO {
 
     @Override
     public List<Station> findAll() {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+        List<Station> stations = new ArrayList<>((int) collection.count());
+
+        for (Document document : collection.find()) {
+            stations.add(getStation(document));
+        }
+
+        LOG.info(LogMessageDAOUtil.createInfoFindAll(COLLECTION_NAME));
+        return stations;
     }
 
     @Override
@@ -58,12 +68,23 @@ public class MongoDbStationDAO implements StationDAO {
 
     @Override
     public Station update(Station station) {
-        return null;
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(station.getId())), new Document("$set", station));
+
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, station.getId()));
+        return station;
     }
 
     @Override
     public void delete(Station station) {
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
 
+        collection.deleteOne(eq(LABEL_ID, new ObjectId(station.getId())));
+
+        LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, station.getId()));
     }
 
     private Station getStation(Document document) {
