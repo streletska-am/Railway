@@ -9,8 +9,5 @@
         <module name="RailwaySystem" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="RailwaySystem" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
