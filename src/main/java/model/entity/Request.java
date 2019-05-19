@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Request {
-    private String id;
-    private String userId;
-    private String trainId;
+    private Long id;
+    private Long userId;
+    private Long trainId;
 
     private TypePlace type;
 
@@ -26,12 +26,12 @@ public class Request {
             request = new Request();
         }
 
-        public RequestBuilder setUserId(String id) {
+        public RequestBuilder setUserId(Long id) {
             request.setUserId(id);
             return this;
         }
 
-        public RequestBuilder setTrainId(String id) {
+        public RequestBuilder setTrainId(Long id) {
             request.setTrainId(id);
             return this;
         }

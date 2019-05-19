@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Route {
-    private String id;
-    private String priceId;
+    private Long id;
+    private Long priceId;
 
-    private String fromId;
-    private String toId;
+    private Long fromId;
+    private Long toId;
 
     private String fromTime;
     private String toTime;

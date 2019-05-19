@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Price {
-    private String id;
+    private Long id;
 
 
     private Double compartmentFactor;
