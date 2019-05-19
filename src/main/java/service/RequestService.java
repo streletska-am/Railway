@@ -116,7 +116,7 @@ public class RequestService {
             ticket.setSurname(user.getSurname());
 
             Double price;
-            Long max;
+            Integer max;
             Route route = RouteService.getInstance().findRouteById(trainRoute.getRouteId());
             switch (parameter) {
                 case "C": {

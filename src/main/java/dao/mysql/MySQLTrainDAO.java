@@ -185,9 +185,9 @@ class MySQLTrainDAO implements TrainDAO {
 
         result.setId(set.getString(LABEL_ID));
         result.setRouteId(set.getString(LABEL_ROUTE_ID));
-        result.setBerthFree(set.getLong(LABEL_BERTH_FREE));
-        result.setCompartmentFree(set.getLong(LABEL_COMPARTMENT_FREE));
-        result.setDeluxeFree(set.getLong(LABEL_DELUXE_FREE));
+        result.setBerthFree(set.getInt(LABEL_BERTH_FREE));
+        result.setCompartmentFree(set.getInt(LABEL_COMPARTMENT_FREE));
+        result.setDeluxeFree(set.getInt(LABEL_DELUXE_FREE));
 
         return result;
     }

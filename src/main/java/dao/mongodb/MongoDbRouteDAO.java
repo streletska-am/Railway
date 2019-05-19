@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import dao.RouteDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Route;
+import model.entity.dto.RouteDTO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -57,7 +58,7 @@ public class MongoDbRouteDAO implements RouteDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getRoute(document);
+        return document == null || document.isEmpty() ? null : getRoute(document);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class MongoDbRouteDAO implements RouteDAO {
 
         List<Route> routes = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find(eq(LABEL_FROM_ID, id))) {
+        for (Document document : collection.find(eq(LABEL_FROM_ID, new ObjectId(id)))) {
             routes.add(getRoute(document));
         }
 
@@ -80,9 +81,9 @@ public class MongoDbRouteDAO implements RouteDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
-        document.put(LABEL_PRICE_ID, route.getPriceId());
-        document.put(LABEL_FROM_ID, route.getFromId());
-        document.put(LABEL_TO_ID, route.getToId());
+        document.put(LABEL_PRICE_ID, new ObjectId(route.getPriceId()));
+        document.put(LABEL_FROM_ID, new ObjectId(route.getFromId()));
+        document.put(LABEL_TO_ID, new ObjectId(route.getToId()));
         document.put(LABEL_FROM_TIME, route.getFromTime());
         document.put(LABEL_TO_TIME, route.getToTime());
         document.put(LABEL_DISTANCE, route.getDistance());
@@ -97,8 +98,16 @@ public class MongoDbRouteDAO implements RouteDAO {
     public Route update(Route route) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
+        RouteDTO routeDTO=new RouteDTO();
+        routeDTO.setId(new ObjectId(route.getId()));
+        routeDTO.setFromId(new ObjectId(route.getFromId()));
+        routeDTO.setPriceId(new ObjectId(route.getPriceId()));
+        routeDTO.setDistance(route.getDistance());
+        routeDTO.setToTime(route.getToTime());
+        routeDTO.setToId(new ObjectId(route.getToId()));
+        routeDTO.setFromTime(route.getFromTime());
+        collection.findOneAndUpdate(eq(LABEL_ID, routeDTO.getId()), new Document("$set", routeDTO));
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(route.getId())), new Document("$set", route));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, route.getId()));
         return route;

@@ -5,6 +5,7 @@ import dao.RequestDAO;
 import dao.mysql.TypePlace;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Request;
+import model.entity.dto.RequestDTO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -53,7 +54,7 @@ public class MongoDbRequestDAO implements RequestDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getRequest(document);
+        return document == null || document.isEmpty() ? null : getRequest(document);
     }
 
     @Override
@@ -62,9 +63,9 @@ public class MongoDbRequestDAO implements RequestDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
-        document.put(LABEL_USER_ID, request.getUserId());
-        document.put(LABEL_TRAIN_ID, request.getTrainId());
-        document.put(LABEL_TYPE, request.getType());
+        document.put(LABEL_USER_ID, new ObjectId(request.getUserId()));
+        document.put(LABEL_TRAIN_ID, new ObjectId(request.getTrainId()));
+        document.put(LABEL_TYPE, request.getType().toString());
         document.put(LABEL_PRICE, request.getPrice());
         collection.insertOne(document);
 
@@ -77,8 +78,14 @@ public class MongoDbRequestDAO implements RequestDAO {
     public Request update(Request request) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
+        RequestDTO requestDTO=new RequestDTO();
+        requestDTO.setId(new ObjectId(request.getId()));
+        requestDTO.setUserId(new ObjectId(request.getUserId()));
+        requestDTO.setTrainId(new ObjectId(request.getTrainId()));
+        requestDTO.setPrice(request.getPrice());
+        requestDTO.setType(request.getType().toString());
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(request.getId())), new Document("$set", request));
+        collection.findOneAndUpdate(eq(LABEL_ID, requestDTO.getId()), new Document("$set", requestDTO));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, request.getId()));
         return request;
@@ -96,11 +103,10 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     private Request getRequest(Document document){
         Request request = new Request();
-        System.out.println(document);
         request.setId(document.getObjectId(LABEL_ID).toHexString());
         request.setTrainId(document.getObjectId(LABEL_TRAIN_ID).toHexString());
         request.setUserId(document.getObjectId(LABEL_USER_ID).toHexString());
-        request.setPrice((double) document.getInteger(LABEL_PRICE));
+        request.setPrice(document.get(LABEL_PRICE, Number.class).doubleValue());
         request.setType(TypePlace.valueOf(document.getString(LABEL_TYPE)));
         return request;
     }

@@ -11,9 +11,9 @@ public class TrainRoute {
     private String trainId;
     private String routeId;
 
-    private Long compartmentFree;
-    private Long deluxeFree;
-    private Long berthFree;
+    private Integer compartmentFree;
+    private Integer deluxeFree;
+    private Integer berthFree;
 
     private String fromDate;
     private String toDate;

@@ -62,7 +62,7 @@ public class MongoDbPriceDAO implements PriceDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getPrice(document);
+        return document == null || document.isEmpty() ? null : getPrice(document);
     }
 
     @Override

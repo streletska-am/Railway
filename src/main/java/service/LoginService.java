@@ -66,7 +66,9 @@ public class LoginService {
     }
 
     User securePassword(final User user) {
+        System.out.println(user.getPassword());
         String securePassword = DigestUtils.md5Hex(user.getPassword());
+        System.out.println(securePassword);
         user.setPassword(securePassword);
         return user;
     }

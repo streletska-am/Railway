@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import dao.TrainDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Train;
+import model.entity.dto.TrainDTO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -52,7 +53,7 @@ public class MongoDbTrainDAO implements TrainDAO {
                 .getCollection(COLLECTION_NAME);
         List<Train> trains = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find(eq(LABEL_ROUTE_ID, route_id))) {
+        for (Document document : collection.find(eq(LABEL_ROUTE_ID,new ObjectId(route_id)))) {
             trains.add(getTrain(document));
         }
         return trains;
@@ -64,7 +65,7 @@ public class MongoDbTrainDAO implements TrainDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getTrain(document);
+        return document == null || document.isEmpty() ? null :getTrain(document);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class MongoDbTrainDAO implements TrainDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
-        document.put(LABEL_ROUTE_ID, train.getRouteId());
+        document.put(LABEL_ROUTE_ID, new ObjectId(train.getRouteId()));
         document.put(LABEL_COMPARTMENT_FREE, train.getCompartmentFree());
         document.put(LABEL_BERTH_FREE, train.getBerthFree());
         document.put(LABEL_DELUXE_FREE, train.getDeluxeFree());
@@ -89,7 +90,13 @@ public class MongoDbTrainDAO implements TrainDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(train.getId())), new Document("$set", train));
+        TrainDTO trainDTO= new TrainDTO();
+        trainDTO.setId(new ObjectId(train.getId()));
+        trainDTO.setRouteId(new ObjectId(train.getRouteId()));
+        trainDTO.setBerthFree(train.getBerthFree());
+        trainDTO.setCompartmentFree(train.getCompartmentFree());
+        trainDTO.setDeluxeFree(train.getDeluxeFree());
+        collection.findOneAndUpdate(eq(LABEL_ID, trainDTO.getId()), new Document("$set", trainDTO));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, train.getId()));
         return train;
@@ -110,9 +117,9 @@ public class MongoDbTrainDAO implements TrainDAO {
 
         result.setId(document.getObjectId(LABEL_ID).toHexString());
         result.setRouteId(document.getObjectId(LABEL_ROUTE_ID).toHexString());
-        result.setBerthFree((long) document.getInteger(LABEL_BERTH_FREE));
-        result.setCompartmentFree((long) document.getInteger(LABEL_COMPARTMENT_FREE));
-        result.setDeluxeFree((long) document.getInteger(LABEL_DELUXE_FREE));
+        result.setBerthFree( document.getInteger(LABEL_BERTH_FREE));
+        result.setCompartmentFree(document.getInteger(LABEL_COMPARTMENT_FREE));
+        result.setDeluxeFree( document.getInteger(LABEL_DELUXE_FREE));
 
         return result;
     }

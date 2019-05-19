@@ -49,7 +49,7 @@ public class MongoDbStationDAO implements StationDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getStation(document);
+        return document == null || document.isEmpty() ? null :getStation(document);
     }
 
     @Override

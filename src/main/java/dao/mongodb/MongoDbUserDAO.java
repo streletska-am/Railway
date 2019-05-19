@@ -54,7 +54,7 @@ public class MongoDbUserDAO implements UserDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return getUser(document);
+        return document == null || document.isEmpty() ? null : getUser(document);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class MongoDbUserDAO implements UserDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_EMAIL, login)).first();
-        return getUser(document);
+        return  document==null || document.isEmpty() ? null : getUser(document);
     }
 
     @Override

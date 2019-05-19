@@ -81,7 +81,7 @@
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.11" />
           <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:2.6.0" />
-          <element id="library" level="project" name="Maven: org.mongodb:mongo-java-driver:3.4.2" />
+          <element id="library" level="project" name="Maven: org.mongodb:mongo-java-driver:3.8.0" />
           <element id="library" level="project" name="Maven: javax:javaee-web-api:7.0" />
           <element id="library" level="project" name="Maven: jstl:jstl:1.2" />
           <element id="library" level="project" name="Maven: org.projectlombok:lombok:1.16.14" />

@@ -21,7 +21,7 @@ public class Ticket {
     private String toCity;
 
     private String typePlace;
-    private Long max;
+    private Integer max;
 
     private Double price;
 }
