@@ -49,7 +49,7 @@ public class LogMessageDAOUtil {
      * @param id
      * @return CREATE {tableName} with ID = {id}
      */
-    public static String createInfoCreate(String tableName, String id) {
+    public static String createInfoCreate(String tableName, Long id) {
         return createInfo(CREATE, tableName, ID, id);
     }
 
@@ -58,7 +58,7 @@ public class LogMessageDAOUtil {
      * @param id
      * @return UPDATE {tableName} with ID = {id}
      */
-    public static String createInfoUpdate(String tableName, String id) {
+    public static String createInfoUpdate(String tableName, Long id) {
         return createInfo(UPDATE, tableName, ID, id);
     }
 
@@ -67,7 +67,7 @@ public class LogMessageDAOUtil {
      * @param id
      * @return DELETE {tableName} with ID = {id}
      */
-    public static String createInfoDelete(String tableName, String id) {
+    public static String createInfoDelete(String tableName, Long id) {
         return createInfo(DELETE, tableName, ID, id);
     }
 
@@ -112,7 +112,7 @@ public class LogMessageDAOUtil {
      * @param id
      * @return Cannot UPDATE {tableName} with ID = {id}
      */
-    public static String createErrorUpdate(String tableName, String id) {
+    public static String createErrorUpdate(String tableName, Long id) {
         return createInfo(CANNOT + SPACE + UPDATE, tableName, ID, id);
     }
 
@@ -121,7 +121,7 @@ public class LogMessageDAOUtil {
      * @param id
      * @return Cannot DELETE {tableName} with ID = {id}
      */
-    public static String createErrorDelete(String tableName, String id) {
+    public static String createErrorDelete(String tableName, Long id) {
         return createInfo(CANNOT + SPACE + DELETE, tableName, ID, id);
     }
 

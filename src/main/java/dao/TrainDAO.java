@@ -14,12 +14,12 @@ public interface TrainDAO {
     /**
      * Find TRAINS by given ID of ROUTE
      */
-    List<Train> findByRoute(String route_id);
+    List<Train> findByRoute(Long route_id);
 
     /**
      * Find TRAIN by ID
      */
-    Train findById(String id);
+    Train findById(Long id);
 
     /**
      * Insert new TRAIN

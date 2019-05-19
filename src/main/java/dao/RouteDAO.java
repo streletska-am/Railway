@@ -14,12 +14,12 @@ public interface RouteDAO {
     /**
      * Find ROUTE by ID
      */
-    Route findById(String id);
+    Route findById(Long id);
 
     /**
      * Find ROUTES by given ID of STATION
      */
-    List<Route> findByFromId(String id);
+    List<Route> findByFromId(Long id);
 
     /**
      * Insert new ROUTE

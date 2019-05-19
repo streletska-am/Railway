@@ -13,7 +13,7 @@ public interface UserDAO {
     /**
      * Find USER by ID
      */
-    User findById(String id);
+    User findById(Long id);
 
     /**
      * Find USER by login

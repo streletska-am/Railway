@@ -67,7 +67,7 @@ class MySQLRouteDAO implements RouteDAO {
     }
 
     @Override
-    public Route findById(String id) {
+    public Route findById(Long id) {
         List<Route> result = findByParameter(LABEL_ID, id);
         if (result.size() != 1)
             return null;
@@ -76,7 +76,7 @@ class MySQLRouteDAO implements RouteDAO {
     }
 
     @Override
-    public List<Route> findByFromId(String id) {
+    public List<Route> findByFromId(Long id) {
         return findByParameter(LABEL_FROM_ID, id);
     }
 
@@ -101,10 +101,10 @@ class MySQLRouteDAO implements RouteDAO {
 
             statement = connection.prepareStatement(createQuery);
 
-            statement.setString(1, route.getId());
-            statement.setString(2, route.getPriceId());
-            statement.setString(3, route.getFromId());
-            statement.setString(4, route.getToId());
+            statement.setLong(1, route.getId());
+            statement.setLong(2, route.getPriceId());
+            statement.setLong(3, route.getFromId());
+            statement.setLong(4, route.getToId());
             statement.setString(5, route.getFromTime());
             statement.setString(6, route.getToTime());
             statement.setDouble(7, route.getDistance());
@@ -140,14 +140,14 @@ class MySQLRouteDAO implements RouteDAO {
 
             statement = connection.prepareStatement(createQuery);
 
-            statement.setString(1, route.getPriceId());
-            statement.setString(2, route.getFromId());
-            statement.setString(3, route.getToId());
+            statement.setLong(1, route.getPriceId());
+            statement.setLong(2, route.getFromId());
+            statement.setLong(3, route.getToId());
             statement.setString(4, route.getFromTime());
             statement.setString(5, route.getToTime());
             statement.setDouble(6, route.getDistance());
 
-            statement.setString(7, route.getId());
+            statement.setLong(7, route.getId());
 
             statement.executeUpdate();
 
@@ -172,7 +172,7 @@ class MySQLRouteDAO implements RouteDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(createQuery);
 
-            statement.setString(1, route.getId());
+            statement.setLong(1, route.getId());
             statement.executeUpdate();
 
             LOG.info(LogMessageDAOUtil.createInfoDelete(TABLE_NAME, route.getId()));
@@ -186,12 +186,12 @@ class MySQLRouteDAO implements RouteDAO {
 
     private Route getRoute(ResultSet set) throws SQLException {
         Route result = new Route();
-        result.setId(set.getString(LABEL_ID));
+        result.setId(set.getLong(LABEL_ID));
 
-        result.setPriceId(set.getString(LABEL_PRICE_ID));
+        result.setPriceId(set.getLong(LABEL_PRICE_ID));
 
-        result.setFromId(set.getString(LABEL_FROM_ID));
-        result.setToId(set.getString(LABEL_TO_ID));
+        result.setFromId(set.getLong(LABEL_FROM_ID));
+        result.setToId(set.getLong(LABEL_TO_ID));
 
         result.setFromTime(set.getString(LABEL_FROM_TIME));
         result.setToTime(set.getString(LABEL_TO_TIME));
@@ -201,7 +201,7 @@ class MySQLRouteDAO implements RouteDAO {
         return result;
     }
 
-    private List<Route> findByParameter(String label, String parameter) {
+    private List<Route> findByParameter(String label, Long parameter) {
         List<Route> result = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -211,7 +211,7 @@ class MySQLRouteDAO implements RouteDAO {
 
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(findByIdQuery);
-            statement.setString(1, parameter);
+            statement.setLong(1, parameter);
             ResultSet set = statement.executeQuery();
             while (set.next()) {
                 result.add(getRoute(set));

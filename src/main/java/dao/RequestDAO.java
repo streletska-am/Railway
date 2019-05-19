@@ -14,7 +14,7 @@ public interface RequestDAO {
     /**
      * Find REQUEST by ID
      */
-    Request findById(String id);
+    Request findById(Long id);
 
     /**
      * Insert new REQUEST

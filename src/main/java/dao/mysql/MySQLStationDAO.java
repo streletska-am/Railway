@@ -59,7 +59,7 @@ class MySQLStationDAO implements StationDAO {
     }
 
     @Override
-    public Station findById(String id) {
+    public Station findById(Long id) {
         Station result = null;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -69,7 +69,7 @@ class MySQLStationDAO implements StationDAO {
 
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(findByIdQuery);
-            statement.setString(1, id);
+            statement.setLong(1, id);
             ResultSet set = statement.executeQuery();
             if (set.next()) {
                 result = getStation(set);
@@ -100,7 +100,7 @@ class MySQLStationDAO implements StationDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
 
             statement = connection.prepareStatement(createQuery);
-            statement.setString(1, station.getId());
+            statement.setLong(1, station.getId());
             statement.setString(2, station.getName());
 
             statement.executeUpdate();
@@ -132,7 +132,7 @@ class MySQLStationDAO implements StationDAO {
 
             statement = connection.prepareStatement(createQuery);
             statement.setString(1, station.getName());
-            statement.setString(2, station.getId());
+            statement.setLong(2, station.getId());
 
             statement.executeUpdate();
 
@@ -157,7 +157,7 @@ class MySQLStationDAO implements StationDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(createQuery);
 
-            statement.setString(1, station.getId());
+            statement.setLong(1, station.getId());
             statement.executeUpdate();
 
             LOG.info(LogMessageDAOUtil.createInfoDelete(TABLE_NAME, station.getId()));
@@ -171,7 +171,7 @@ class MySQLStationDAO implements StationDAO {
     private Station getStation(ResultSet set) throws SQLException {
         Station result = new Station();
 
-        result.setId(set.getString(LABEL_ID));
+        result.setId(set.getLong(LABEL_ID));
         result.setName(set.getString(LABEL_NAME));
 
         return result;

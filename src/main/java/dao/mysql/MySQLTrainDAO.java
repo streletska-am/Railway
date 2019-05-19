@@ -62,12 +62,12 @@ class MySQLTrainDAO implements TrainDAO {
     }
 
     @Override
-    public List<Train> findByRoute(String route_id) {
+    public List<Train> findByRoute(Long route_id) {
         return findByParameter(LABEL_ROUTE_ID, route_id);
     }
 
     @Override
-    public Train findById(String id) {
+    public Train findById(Long id) {
         List<Train> result = findByParameter(LABEL_ID, id);
         if (result.size() != 1)
             return null;
@@ -93,8 +93,8 @@ class MySQLTrainDAO implements TrainDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
 
             statement = connection.prepareStatement(createQuery);
-            statement.setString(1, train.getId());
-            statement.setString(2, train.getRouteId());
+            statement.setLong(1, train.getId());
+            statement.setLong(2, train.getRouteId());
             statement.setLong(3, train.getBerthFree());
             statement.setLong(4, train.getCompartmentFree());
             statement.setLong(5, train.getDeluxeFree());
@@ -130,12 +130,12 @@ class MySQLTrainDAO implements TrainDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
 
             statement = connection.prepareStatement(createQuery);
-            statement.setString(1, train.getRouteId());
+            statement.setLong(1, train.getRouteId());
             statement.setLong(2, train.getBerthFree());
             statement.setLong(3, train.getCompartmentFree());
             statement.setLong(4, train.getDeluxeFree());
 
-            statement.setString(5, train.getId());
+            statement.setLong(5, train.getId());
 
             statement.executeUpdate();
 
@@ -154,7 +154,7 @@ class MySQLTrainDAO implements TrainDAO {
 
     }
 
-    private List<Train> findByParameter(String label, Object parameter) {
+    private List<Train> findByParameter(String label, Long parameter) {
         List<Train> result = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -164,7 +164,7 @@ class MySQLTrainDAO implements TrainDAO {
 
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(findByIdQuery);
-            statement.setObject(1, parameter);
+            statement.setLong(1, parameter);
             ResultSet set = statement.executeQuery();
             while (set.next()) {
                 result.add(getTrain(set));
@@ -183,8 +183,8 @@ class MySQLTrainDAO implements TrainDAO {
     private Train getTrain(ResultSet set) throws SQLException {
         Train result = new Train();
 
-        result.setId(set.getString(LABEL_ID));
-        result.setRouteId(set.getString(LABEL_ROUTE_ID));
+        result.setId(set.getLong(LABEL_ID));
+        result.setRouteId(set.getLong(LABEL_ROUTE_ID));
         result.setBerthFree(set.getInt(LABEL_BERTH_FREE));
         result.setCompartmentFree(set.getInt(LABEL_COMPARTMENT_FREE));
         result.setDeluxeFree(set.getInt(LABEL_DELUXE_FREE));

@@ -65,7 +65,7 @@ class MySQLUserDAO implements UserDAO {
     }
 
     @Override
-    public User findById(String id) {
+    public User findById(Long id) {
         List<User> result = findByParameter(LABEL_ID, id);
         if (result.size() != 1)
             return null;
@@ -102,7 +102,7 @@ class MySQLUserDAO implements UserDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
 
             statement = connection.prepareStatement(createQuery);
-            statement.setString(1, user.getId());
+            statement.setLong(1, user.getId());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
             statement.setString(4, user.getName());
@@ -150,7 +150,7 @@ class MySQLUserDAO implements UserDAO {
             statement.setString(5, user.getPhone());
             statement.setBoolean(6, user.getAdmin());
 
-            statement.setString(7, user.getId());
+            statement.setLong(7, user.getId());
 
             statement.executeUpdate();
 
@@ -175,7 +175,7 @@ class MySQLUserDAO implements UserDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(createQuery);
 
-            statement.setString(1, user.getId());
+            statement.setLong(1, user.getId());
             statement.executeUpdate();
 
             LOG.info(LogMessageDAOUtil.createInfoDelete(TABLE_NAME, user.getId()));
@@ -223,7 +223,7 @@ class MySQLUserDAO implements UserDAO {
 
     private User getUser(ResultSet set) throws SQLException {
         User result = new User();
-        result.setId(set.getString(LABEL_ID));
+        result.setId(set.getLong(LABEL_ID));
         result.setEmail(set.getString(LABEL_EMAIL));
         result.setPassword(set.getString(LABEL_PASSWORD));
 

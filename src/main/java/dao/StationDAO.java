@@ -14,7 +14,7 @@ public interface StationDAO {
     /**
      * Find STATION by ID
      */
-    Station findById(String id);
+    Station findById(Long id);
 
     /**
      * Insert new STATION

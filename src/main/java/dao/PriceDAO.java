@@ -14,7 +14,7 @@ public interface PriceDAO {
     /**
      * Find PRICE by ID
      */
-    Price findById(String id);
+    Price findById(Long id);
 
     /**
      * Insert new PRICE

@@ -57,7 +57,7 @@ class MySQLPriceDAO implements PriceDAO {
     }
 
     @Override
-    public Price findById(String id) {
+    public Price findById(Long id) {
         Price result = null;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -67,7 +67,7 @@ class MySQLPriceDAO implements PriceDAO {
 
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(findByIdQuery);
-            statement.setString(1, id);
+            statement.setLong(1, id);
             ResultSet set = statement.executeQuery();
             if (set.next()) {
                 result = getPrice(set);
@@ -99,7 +99,7 @@ class MySQLPriceDAO implements PriceDAO {
             connection = MySQLConnectionPool.getInstance().getConnection();
 
             statement = connection.prepareStatement(createQuery);
-            statement.setString(1, price.getId());
+            statement.setLong(1, price.getId());
             statement.setDouble(2, price.getBerthFactor());
             statement.setDouble(3, price.getCompartmentFactor());
             statement.setDouble(4, price.getDeluxeFactor());
@@ -133,7 +133,7 @@ class MySQLPriceDAO implements PriceDAO {
             statement.setDouble(1, price.getBerthFactor());
             statement.setDouble(2, price.getCompartmentFactor());
             statement.setDouble(3, price.getDeluxeFactor());
-            statement.setString(4, price.getId());
+            statement.setLong(4, price.getId());
 
             statement.executeUpdate();
 
@@ -157,7 +157,7 @@ class MySQLPriceDAO implements PriceDAO {
 
             connection = MySQLConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(deleteQuery);
-            statement.setString(1, price.getId());
+            statement.setLong(1, price.getId());
             statement.executeUpdate();
 
             LOG.info(LogMessageDAOUtil.createInfoDelete(TABLE_NAME, price.getId()));
@@ -180,7 +180,7 @@ class MySQLPriceDAO implements PriceDAO {
 
     private Price getPrice(ResultSet set) throws SQLException {
         Price result = new Price();
-        result.setId(set.getString(LABEL_ID));
+        result.setId(set.getLong(LABEL_ID));
         result.setBerthFactor(set.getDouble(LABEL_BERTH_FACTOR));
         result.setCompartmentFactor(set.getDouble(LABEL_BERTH_FACTOR));
         result.setDeluxeFactor(set.getDouble(LABEL_DELUXE_FACTOR));
