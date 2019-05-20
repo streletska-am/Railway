@@ -6,7 +6,6 @@ import dao.mongodb.dto.UserDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.User;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +110,7 @@ public class MongoDbUserDAO implements UserDAO {
 
     private UserDto getUser(Document document) {
         UserDto result = new UserDto();
-        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
+        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
 
         result.setId(document.get(LABEL_ID, Number.class).longValue());
 

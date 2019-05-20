@@ -1,11 +1,11 @@
 package dao.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import dao.SequenceDao;
 import dao.SequenceException;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -27,17 +27,20 @@ public class MongoDbSequenceDao implements SequenceDao {
         if (document == null || document.isEmpty()) {
             throw new SequenceException(String.format("Not found sequence for key '%s'", sequenceId));
         }
-
         SequenceId sequenceId = getSequenceId(document);
-        sequenceId.setSequence(sequenceId.getSequence() + 1);
-        collection.findOneAndUpdate(eq(LABEL_ID, sequenceId.getId()), new Document("$set", sequenceId));
+        BasicDBObject searchQuery = new BasicDBObject().append("id", sequenceId.getId());
 
+        sequenceId.setSequence(sequenceId.getSequence() + 1);
+        BasicDBObject newDocument = new BasicDBObject();
+        newDocument.append("$set", new BasicDBObject().append("sequence", sequenceId.getSequence()));
+
+        collection.updateOne(searchQuery, newDocument);
         return sequenceId.getSequence();
     }
 
     private SequenceId getSequenceId(Document document) {
         SequenceId result = new SequenceId();
-        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
+        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
         result.setId(document.getString(LABEL_ID));
         result.setSequence(document.get(LABEL_SEQUENCE, Number.class).longValue());
         return result;

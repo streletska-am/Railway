@@ -6,7 +6,6 @@ import dao.mongodb.dto.RouteDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Route;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +120,7 @@ public class MongoDbRouteDAO implements RouteDAO {
     private RouteDto getRoute(Document document) {
         RouteDto result = new RouteDto();
 
-        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
+        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
 
         result.setPriceId(document.get(LABEL_PRICE_ID, Number.class).longValue());

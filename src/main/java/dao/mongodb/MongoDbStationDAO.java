@@ -6,7 +6,6 @@ import dao.mongodb.dto.StationDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Station;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +92,7 @@ public class MongoDbStationDAO implements StationDAO {
     private StationDto getStation(Document document) {
         StationDto result = new StationDto();
 
-        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
+        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setName(document.getString(LABEL_NAME));
 
