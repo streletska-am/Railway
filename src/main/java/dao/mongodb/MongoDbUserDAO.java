@@ -2,9 +2,11 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.UserDAO;
+import dao.mongodb.dto.UserDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.User;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class MongoDbUserDAO implements UserDAO {
 
     private static final String COLLECTION_NAME = "users";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_EMAIL = "email";
     private static final String LABEL_PASSWORD = "password";
@@ -89,9 +92,10 @@ public class MongoDbUserDAO implements UserDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, user.getId()), new Document("$set", user));
+        UserDto userDto = new UserDto(user);
+        collection.findOneAndUpdate(eq(LABEL_ID, userDto.getId()), new Document("$set", userDto));
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, user.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, userDto.getId()));
         return user;
     }
 
@@ -105,8 +109,10 @@ public class MongoDbUserDAO implements UserDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, user.getId()));
     }
 
-    private User getUser(Document document) {
-        User result = new User();
+    private UserDto getUser(Document document) {
+        UserDto result = new UserDto();
+        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
+
         result.setId(document.get(LABEL_ID, Number.class).longValue());
 
         result.setEmail(document.getString(LABEL_EMAIL));

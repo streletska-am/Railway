@@ -2,9 +2,11 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.RouteDAO;
+import dao.mongodb.dto.RouteDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Route;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     private static final String COLLECTION_NAME = "routes";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_PRICE_ID = "price_id";
 
@@ -96,10 +99,12 @@ public class MongoDbRouteDAO implements RouteDAO {
     public Route update(Route route) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
-        collection.findOneAndUpdate(eq(LABEL_ID, route.getId()), new Document("$set", route));
+
+        RouteDto routeDto = new RouteDto(route);
+        collection.findOneAndUpdate(eq(LABEL_ID, routeDto.getId()), new Document("$set", routeDto));
 
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, route.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, routeDto.getId()));
         return route;
     }
 
@@ -113,8 +118,10 @@ public class MongoDbRouteDAO implements RouteDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, route.getId()));
     }
 
-    private Route getRoute(Document document) {
-        Route result = new Route();
+    private RouteDto getRoute(Document document) {
+        RouteDto result = new RouteDto();
+
+        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
 
         result.setPriceId(document.get(LABEL_PRICE_ID, Number.class).longValue());

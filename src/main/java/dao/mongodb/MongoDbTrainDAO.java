@@ -2,9 +2,11 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.TrainDAO;
+import dao.mongodb.dto.TrainDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Train;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class MongoDbTrainDAO implements TrainDAO {
 
     private static final String COLLECTION_NAME = "trains";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_ROUTE_ID = "route_id";
     private static final String LABEL_COMPARTMENT_FREE = "compartment_free";
@@ -88,9 +91,10 @@ public class MongoDbTrainDAO implements TrainDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, train.getId()), new Document("$set", train));
+        TrainDto trainDto = new TrainDto(train);
+        collection.findOneAndUpdate(eq(LABEL_ID, trainDto.getId()), new Document("$set", trainDto));
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, train.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, trainDto.getId()));
         return train;
     }
 
@@ -104,9 +108,10 @@ public class MongoDbTrainDAO implements TrainDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, train.getId()));
     }
 
-    private Train getTrain(Document document) {
-        Train result = new Train();
+    private TrainDto getTrain(Document document) {
+        TrainDto result = new TrainDto();
 
+        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setRouteId(document.get(LABEL_ROUTE_ID, Number.class).longValue());
         result.setBerthFree(document.get(LABEL_BERTH_FREE, Number.class).intValue());

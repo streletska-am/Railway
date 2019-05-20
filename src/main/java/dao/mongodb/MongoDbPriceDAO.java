@@ -2,9 +2,11 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.PriceDAO;
+import dao.mongodb.dto.PriceDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Price;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class MongoDbPriceDAO implements PriceDAO {
     private static final MongoDbPriceDAO INSTANCE = new MongoDbPriceDAO();
     private static final String COLLECTION_NAME = "prices";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_BERTH_FACTOR = "berth_factor";
     private static final String LABEL_COMPARTMENT_FACTOR = "compartment_factor";
@@ -30,8 +33,9 @@ public class MongoDbPriceDAO implements PriceDAO {
     }
 
 
-    private Price getPrice(Document document) {
-        Price result = new Price();
+    private PriceDto getPrice(Document document) {
+        PriceDto result = new PriceDto();
+        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setBerthFactor(document.get(LABEL_BERTH_FACTOR, Number.class).doubleValue());
         result.setCompartmentFactor(document.get(LABEL_COMPARTMENT_FACTOR, Number.class).doubleValue());
@@ -84,9 +88,10 @@ public class MongoDbPriceDAO implements PriceDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, price.getId()), new Document("$set", price));
+        PriceDto priceDto = new PriceDto(price);
+        collection.findOneAndUpdate(eq(LABEL_ID, priceDto.getId()), new Document("$set", priceDto));
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, price.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, priceDto.getId()));
         return price;
     }
 

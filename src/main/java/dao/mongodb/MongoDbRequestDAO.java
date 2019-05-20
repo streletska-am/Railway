@@ -2,10 +2,12 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.RequestDAO;
+import dao.mongodb.dto.RequestDto;
 import dao.mysql.TypePlace;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Request;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     private static final String COLLECTION_NAME = "requests";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_USER_ID = "user_id";
     private static final String LABEL_TRAIN_ID = "train_id";
@@ -77,9 +80,10 @@ public class MongoDbRequestDAO implements RequestDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, request.getId()), new Document("$set", request));
+        RequestDto requestDto = new RequestDto(request);
+        collection.findOneAndUpdate(eq(LABEL_ID, requestDto.getId()), new Document("$set", requestDto));
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, request.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, requestDto.getId()));
         return request;
     }
 
@@ -93,8 +97,9 @@ public class MongoDbRequestDAO implements RequestDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, request.getId()));
     }
 
-    private Request getRequest(Document document) {
-        Request request = new Request();
+    private RequestDto getRequest(Document document) {
+        RequestDto request = new RequestDto();
+        request.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         request.setId(document.get(LABEL_ID, Number.class).longValue());
         request.setTrainId(document.get(LABEL_TRAIN_ID, Number.class).longValue());
         request.setUserId(document.get(LABEL_USER_ID, Number.class).longValue());

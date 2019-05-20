@@ -2,9 +2,11 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.StationDAO;
+import dao.mongodb.dto.StationDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Station;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class MongoDbStationDAO implements StationDAO {
 
     private static final String COLLECTION_NAME = "stations";
 
+    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_NAME = "name";
 
@@ -70,9 +73,10 @@ public class MongoDbStationDAO implements StationDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, station.getId()), new Document("$set", station));
+        StationDto stationDto = new StationDto(station);
+        collection.findOneAndUpdate(eq(LABEL_ID, stationDto.getId()), new Document("$set", stationDto));
 
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, station.getId()));
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, stationDto.getId()));
         return station;
     }
 
@@ -86,9 +90,10 @@ public class MongoDbStationDAO implements StationDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, station.getId()));
     }
 
-    private Station getStation(Document document) {
-        Station result = new Station();
+    private StationDto getStation(Document document) {
+        StationDto result = new StationDto();
 
+        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setName(document.getString(LABEL_NAME));
 
