@@ -2,7 +2,6 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.RouteDAO;
-import dao.mongodb.dto.RouteDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Route;
 import org.bson.Document;
@@ -19,7 +18,6 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     private static final String COLLECTION_NAME = "routes";
 
-    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_PRICE_ID = "price_id";
 
@@ -96,15 +94,7 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     @Override
     public Route update(Route route) {
-        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
-                .getCollection(COLLECTION_NAME);
-
-        RouteDto routeDto = new RouteDto(route);
-        collection.findOneAndUpdate(eq(LABEL_ID, routeDto.getId()), new Document("$set", routeDto));
-
-
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, routeDto.getId()));
-        return route;
+        throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
@@ -117,10 +107,9 @@ public class MongoDbRouteDAO implements RouteDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, route.getId()));
     }
 
-    private RouteDto getRoute(Document document) {
-        RouteDto result = new RouteDto();
+    private Route getRoute(Document document) {
+        Route result = new Route();
 
-        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
 
         result.setPriceId(document.get(LABEL_PRICE_ID, Number.class).longValue());

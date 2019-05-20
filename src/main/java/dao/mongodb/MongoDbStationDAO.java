@@ -2,7 +2,6 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.StationDAO;
-import dao.mongodb.dto.StationDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Station;
 import org.bson.Document;
@@ -19,7 +18,6 @@ public class MongoDbStationDAO implements StationDAO {
 
     private static final String COLLECTION_NAME = "stations";
 
-    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_NAME = "name";
 
@@ -69,14 +67,7 @@ public class MongoDbStationDAO implements StationDAO {
 
     @Override
     public Station update(Station station) {
-        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
-                .getCollection(COLLECTION_NAME);
-
-        StationDto stationDto = new StationDto(station);
-        collection.findOneAndUpdate(eq(LABEL_ID, stationDto.getId()), new Document("$set", stationDto));
-
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, stationDto.getId()));
-        return station;
+        throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
@@ -89,10 +80,9 @@ public class MongoDbStationDAO implements StationDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, station.getId()));
     }
 
-    private StationDto getStation(Document document) {
-        StationDto result = new StationDto();
+    private Station getStation(Document document) {
+        Station result = new Station();
 
-        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setName(document.getString(LABEL_NAME));
 

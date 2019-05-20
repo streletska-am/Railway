@@ -12,7 +12,6 @@ import static com.mongodb.client.model.Filters.eq;
 @AllArgsConstructor
 public class MongoDbSequenceDao implements SequenceDao {
 
-    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_SEQUENCE = "sequence";
 
@@ -27,22 +26,14 @@ public class MongoDbSequenceDao implements SequenceDao {
         if (document == null || document.isEmpty()) {
             throw new SequenceException(String.format("Not found sequence for key '%s'", sequenceId));
         }
-        SequenceId sequenceId = getSequenceId(document);
-        BasicDBObject searchQuery = new BasicDBObject().append("id", sequenceId.getId());
 
-        sequenceId.setSequence(sequenceId.getSequence() + 1);
-        BasicDBObject newDocument = new BasicDBObject();
-        newDocument.append("$set", new BasicDBObject().append("sequence", sequenceId.getSequence()));
+        BasicDBObject query = new BasicDBObject().append("id", document.getString(LABEL_ID));
 
-        collection.updateOne(searchQuery, newDocument);
-        return sequenceId.getSequence();
-    }
+        long val = document.get(LABEL_SEQUENCE, Number.class).longValue() + 1;
+        BasicDBObject target = new BasicDBObject();
+        target.append("$set", new BasicDBObject().append("sequence", val));
 
-    private SequenceId getSequenceId(Document document) {
-        SequenceId result = new SequenceId();
-        result.setObjectId(document.getObjectId(LABEL_OBJECT_ID));
-        result.setId(document.getString(LABEL_ID));
-        result.setSequence(document.get(LABEL_SEQUENCE, Number.class).longValue());
-        return result;
+        collection.updateOne(query, target);
+        return val;
     }
 }

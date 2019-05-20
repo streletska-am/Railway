@@ -2,11 +2,9 @@ package dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import dao.TrainDAO;
-import dao.mongodb.dto.TrainDto;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Train;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,6 @@ public class MongoDbTrainDAO implements TrainDAO {
 
     private static final String COLLECTION_NAME = "trains";
 
-    private static final String LABEL_OBJECT_ID = "_id";
     private static final String LABEL_ID = "id";
     private static final String LABEL_ROUTE_ID = "route_id";
     private static final String LABEL_COMPARTMENT_FREE = "compartment_free";
@@ -88,14 +85,7 @@ public class MongoDbTrainDAO implements TrainDAO {
 
     @Override
     public Train update(Train train) {
-        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
-                .getCollection(COLLECTION_NAME);
-
-        TrainDto trainDto = new TrainDto(train);
-        collection.findOneAndUpdate(eq(LABEL_ID, trainDto.getId()), new Document("$set", trainDto));
-
-        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, trainDto.getId()));
-        return train;
+        throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
@@ -108,10 +98,9 @@ public class MongoDbTrainDAO implements TrainDAO {
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, train.getId()));
     }
 
-    private TrainDto getTrain(Document document) {
-        TrainDto result = new TrainDto();
+    private Train getTrain(Document document) {
+        Train result = new Train();
 
-        result.setObjectId(new ObjectId(document.getString(LABEL_OBJECT_ID)));
         result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setRouteId(document.get(LABEL_ROUTE_ID, Number.class).longValue());
         result.setBerthFree(document.get(LABEL_BERTH_FREE, Number.class).intValue());
