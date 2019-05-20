@@ -11,8 +11,8 @@ import static com.mongodb.client.model.Filters.eq;
 @AllArgsConstructor
 public class MongoDbSequenceDao implements SequenceDao {
 
-    private static final String LABEL_ID = "_id";
-    private static final String LABEL_SEQUENCE = "seq";
+    private static final String LABEL_ID = "id";
+    private static final String LABEL_SEQUENCE = "sequence";
 
     private String sequenceId;
 
@@ -35,8 +35,8 @@ public class MongoDbSequenceDao implements SequenceDao {
 
     private SequenceId getSequenceId(Document document) {
         SequenceId result = new SequenceId();
-        result.setId(document.getObjectId(LABEL_ID));
-        result.setSeq(document.getLong(LABEL_SEQUENCE));
+        result.setId(document.getString(LABEL_ID));
+        result.setSeq(document.get(LABEL_SEQUENCE, Number.class).longValue());
         return result;
     }
 }

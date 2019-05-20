@@ -32,10 +32,10 @@ public class MongoDbPriceDAO implements PriceDAO {
 
     private Price getPrice(Document document) {
         Price result = new Price();
-        result.setId(document.getLong(LABEL_ID));
-        result.setBerthFactor(document.getDouble(LABEL_BERTH_FACTOR));
-        result.setCompartmentFactor(document.getDouble(LABEL_COMPARTMENT_FACTOR));
-        result.setDeluxeFactor(document.getDouble(LABEL_DELUXE_FACTOR));
+        result.setId(document.get(LABEL_ID, Number.class).longValue());
+        result.setBerthFactor(document.get(LABEL_BERTH_FACTOR, Number.class).doubleValue());
+        result.setCompartmentFactor(document.get(LABEL_COMPARTMENT_FACTOR, Number.class).doubleValue());
+        result.setDeluxeFactor(document.get(LABEL_DELUXE_FACTOR, Number.class).doubleValue());
 
         return result;
     }

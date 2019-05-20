@@ -115,17 +115,17 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     private Route getRoute(Document document) {
         Route result = new Route();
-        result.setId(document.getLong(LABEL_ID));
+        result.setId(document.get(LABEL_ID, Number.class).longValue());
 
-        result.setPriceId(document.getLong(LABEL_PRICE_ID));
+        result.setPriceId(document.get(LABEL_PRICE_ID, Number.class).longValue());
 
-        result.setFromId(document.getLong(LABEL_FROM_ID));
-        result.setToId(document.getLong(LABEL_TO_ID));
+        result.setFromId(document.get(LABEL_FROM_ID, Number.class).longValue());
+        result.setToId(document.get(LABEL_TO_ID, Number.class).longValue());
 
         result.setFromTime(document.getString(LABEL_FROM_TIME));
         result.setToTime(document.getString(LABEL_TO_TIME));
 
-        result.setDistance(document.getDouble(LABEL_DISTANCE));
+        result.setDistance(document.get(LABEL_DISTANCE, Number.class).doubleValue());
 
         return result;
     }

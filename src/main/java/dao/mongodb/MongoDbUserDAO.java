@@ -107,7 +107,7 @@ public class MongoDbUserDAO implements UserDAO {
 
     private User getUser(Document document) {
         User result = new User();
-        result.setId(document.getLong(LABEL_ID));
+        result.setId(document.get(LABEL_ID, Number.class).longValue());
 
         result.setEmail(document.getString(LABEL_EMAIL));
         result.setPassword(document.getString(LABEL_PASSWORD));

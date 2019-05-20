@@ -16,7 +16,7 @@ public class LoginService {
     private static final Logger LOG = Logger.getLogger(LoginService.class.getName());
     private static LoginService INSTANCE;
 
-    private static final String USER_SEQUENCE = "users_seq";
+    private static final String USER_SEQUENCE = "users_sequence";
     private static final String USER_DAO = "UserDAO";
 
     private static final String ADD_USER = "addUser()";

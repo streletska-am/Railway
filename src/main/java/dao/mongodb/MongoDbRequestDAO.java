@@ -95,9 +95,9 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     private Request getRequest(Document document) {
         Request request = new Request();
-        request.setId(document.getLong(LABEL_ID));
-        request.setTrainId(document.getLong(LABEL_TRAIN_ID));
-        request.setUserId(document.getLong(LABEL_USER_ID));
+        request.setId(document.get(LABEL_ID, Number.class).longValue());
+        request.setTrainId(document.get(LABEL_TRAIN_ID, Number.class).longValue());
+        request.setUserId(document.get(LABEL_USER_ID, Number.class).longValue());
         request.setPrice(document.get(LABEL_PRICE, Number.class).doubleValue());
         request.setType(TypePlace.valueOf(document.getString(LABEL_TYPE)));
         return request;

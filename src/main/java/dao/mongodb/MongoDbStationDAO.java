@@ -89,7 +89,7 @@ public class MongoDbStationDAO implements StationDAO {
     private Station getStation(Document document) {
         Station result = new Station();
 
-        result.setId(document.getLong(LABEL_ID));
+        result.setId(document.get(LABEL_ID, Number.class).longValue());
         result.setName(document.getString(LABEL_NAME));
 
         return result;
