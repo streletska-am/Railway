@@ -1,5 +1,6 @@
 package dao.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import dao.TrainDAO;
 import dao.mysql.util.LogMessageDAOUtil;
@@ -85,7 +86,21 @@ public class MongoDbTrainDAO implements TrainDAO {
 
     @Override
     public Train update(Train train) {
-        throw new IllegalStateException("Not implemented yet!");
+        MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
+                .getCollection(COLLECTION_NAME);
+
+        BasicDBObject query = new BasicDBObject().append("id", train.getId());
+
+        BasicDBObject target = new BasicDBObject();
+        target.append("$set", new BasicDBObject()
+                .append(LABEL_COMPARTMENT_FREE, train.getCompartmentFree())
+                .append(LABEL_DELUXE_FREE, train.getDeluxeFree())
+                .append(LABEL_BERTH_FREE, train.getBerthFree()));
+
+        collection.updateOne(query, target);
+
+        LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, train.getId()));
+        return train;
     }
 
     @Override

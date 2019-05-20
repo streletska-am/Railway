@@ -27,11 +27,11 @@ public class MongoDbSequenceDao implements SequenceDao {
             throw new SequenceException(String.format("Not found sequence for key '%s'", sequenceId));
         }
 
-        BasicDBObject query = new BasicDBObject().append("id", document.getString(LABEL_ID));
+        BasicDBObject query = new BasicDBObject().append(LABEL_ID, document.getString(LABEL_ID));
 
         long val = document.get(LABEL_SEQUENCE, Number.class).longValue() + 1;
         BasicDBObject target = new BasicDBObject();
-        target.append("$set", new BasicDBObject().append("sequence", val));
+        target.append("$set", new BasicDBObject().append(LABEL_SEQUENCE, val));
 
         collection.updateOne(query, target);
         return val;

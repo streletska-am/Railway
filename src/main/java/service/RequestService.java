@@ -26,7 +26,7 @@ public class RequestService {
     private static final Logger LOG = Logger.getLogger(RequestDAO.class.getName());
     private static RequestService INSTANCE;
 
-    private static final String USER_SEQUENCE = "requests_seq";
+    private static final String REQUESTS_SEQUENCE = "requests_sequence";
 
     private DAOFactory factory;
 
@@ -83,7 +83,7 @@ public class RequestService {
     }
 
     private Request generateId(final Request request) {
-        Long id = factory.createSequenceDao(USER_SEQUENCE).getNextSequenceId();
+        Long id = factory.createSequenceDao(REQUESTS_SEQUENCE).getNextSequenceId();
         request.setId(id);
         return request;
     }
