@@ -4,6 +4,7 @@ import dao.DAOFactory;
 import dao.PriceDAO;
 import dao.RequestDAO;
 import dao.RouteDAO;
+import dao.SequenceDao;
 import dao.StationDAO;
 import dao.TrainDAO;
 import dao.UserDAO;
@@ -26,7 +27,8 @@ public class MongoDbFactory implements DAOFactory {
     }
 
     @Override
-    public TrainDAO createTrainDAO() { return MongoDbTrainDAO.getInstance();
+    public TrainDAO createTrainDAO() {
+        return MongoDbTrainDAO.getInstance();
     }
 
     @Override
@@ -37,5 +39,10 @@ public class MongoDbFactory implements DAOFactory {
     @Override
     public StationDAO createStationDAO() {
         return MongoDbStationDAO.getInstance();
+    }
+
+    @Override
+    public SequenceDao createSequenceDao(String sequenceName) {
+        return new MongoDbSequenceDao(sequenceName);
     }
 }

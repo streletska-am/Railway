@@ -44,7 +44,7 @@ public class RouteService {
         return INSTANCE;
     }
 
-    Route findRouteById(String id) {
+    Route findRouteById(Long id) {
         return factory.createRouteDAO().findById(id);
     }
 

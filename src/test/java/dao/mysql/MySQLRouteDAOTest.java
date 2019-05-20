@@ -65,7 +65,7 @@ public class MySQLRouteDAOTest {
 
     @Test
     public void shouldBeSimilarQueriesFindById() throws Exception {
-        Route route = mySQLRouteDAO.findById("1");
+        Route route = mySQLRouteDAO.findById(1L);
         verify(connection).prepareStatement(queryArgumentCaptor.capture());
         assertEquals(FIND_BY_ID_QUERY, queryArgumentCaptor.getValue());
     }

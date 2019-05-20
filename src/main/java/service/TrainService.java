@@ -42,7 +42,7 @@ public class TrainService {
         return INSTANCE;
     }
 
-    public Train findTrainById(String id) {
+    public Train findTrainById(Long id) {
         return factory.createTrainDAO().findById(id);
     }
 
@@ -58,7 +58,7 @@ public class TrainService {
     }
 
 
-    public List<TrainRoute> findTrainsAndRoutes(String fromId, String toId, Date fromDate) {
+    public List<TrainRoute> findTrainsAndRoutes(Long fromId, Long toId, Date fromDate) {
         Station from = factory.createStationDAO().findById(fromId);
         Station to = factory.createStationDAO().findById(toId);
 

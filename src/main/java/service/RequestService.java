@@ -17,7 +17,6 @@ import util.Configuration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import static util.Configuration.PROFILE_DATABASE;
@@ -27,6 +26,7 @@ public class RequestService {
     private static final Logger LOG = Logger.getLogger(RequestDAO.class.getName());
     private static RequestService INSTANCE;
 
+    private static final String USER_SEQUENCE = "requests_seq";
 
     private DAOFactory factory;
 
@@ -82,8 +82,8 @@ public class RequestService {
         return factory.createRequestDAO().create(request);
     }
 
-    Request generateId(final Request request) {
-        String id = UUID.randomUUID().toString();
+    private Request generateId(final Request request) {
+        Long id = factory.createSequenceDao(USER_SEQUENCE).getNextSequenceId();
         request.setId(id);
         return request;
     }

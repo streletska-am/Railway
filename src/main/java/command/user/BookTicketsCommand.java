@@ -50,7 +50,7 @@ public class BookTicketsCommand implements Command {
             List<Ticket> resultTickets = new ArrayList<>();
 
             for (Ticket ticket : tickets) {
-                Integer count = Integer.parseInt(request.getParameter(ticket.getTrainId()));
+                Integer count = Integer.parseInt(request.getParameter(ticket.getTrainId().toString()));
                 resultTickets.addAll(RequestService.getInstance().addTickets(ticket, count));
             }
 

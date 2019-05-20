@@ -1,17 +1,16 @@
 package service;
 
 import dao.DAOFactory;
+import dao.SequenceDao;
 import dao.UserDAO;
 import model.entity.User;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.UUID;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +20,7 @@ public class LoginServiceTest {
     private static final String LOGIN = "login";
     private static final String PASSWORD = "password";
 
+    private SequenceDao sequenceDao;
     private DAOFactory daoFactory;
     private UserDAO userDAO;
 
@@ -30,10 +30,12 @@ public class LoginServiceTest {
     public void setUp() {
         daoFactory = mock(DAOFactory.class);
         userDAO = mock(UserDAO.class);
+        sequenceDao = mock(SequenceDao.class);
         loginService = LoginService.getInstance();
         loginService.setFactory(daoFactory);
 
         when(daoFactory.createUserDAO()).thenReturn(userDAO);
+        when(daoFactory.createSequenceDao(any())).thenReturn(sequenceDao);
     }
 
     @Test
@@ -61,10 +63,10 @@ public class LoginServiceTest {
         userWithoutId.setEmail("test.test@gmail.com");
         userWithoutId.setPassword(PASSWORD);
 
-        expectedUser.setId(UUID.nameUUIDFromBytes(userWithoutId.getEmail().getBytes(UTF_8)).toString());
         expectedUser.setPassword(PASSWORD);
 
         when(userDAO.create(userWithoutId)).thenReturn(expectedUser);
+        when(sequenceDao.getNextSequenceId()).thenReturn(null);
 
         User actualUser = loginService.addUser(userWithoutId);
 

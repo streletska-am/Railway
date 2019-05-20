@@ -5,7 +5,6 @@ import dao.PriceDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Price;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ public class MongoDbPriceDAO implements PriceDAO {
     private static final MongoDbPriceDAO INSTANCE = new MongoDbPriceDAO();
     private static final String COLLECTION_NAME = "prices";
 
-    private static final String LABEL_ID = "_id";
+    private static final String LABEL_ID = "id";
     private static final String LABEL_BERTH_FACTOR = "berth_factor";
     private static final String LABEL_COMPARTMENT_FACTOR = "compartment_factor";
     private static final String LABEL_DELUXE_FACTOR = "deluxe_factor";
@@ -31,10 +30,9 @@ public class MongoDbPriceDAO implements PriceDAO {
     }
 
 
-
-    private Price getPrice(Document document){
+    private Price getPrice(Document document) {
         Price result = new Price();
-        result.setId(document.getObjectId(LABEL_ID).toHexString());
+        result.setId(document.getLong(LABEL_ID));
         result.setBerthFactor(document.getDouble(LABEL_BERTH_FACTOR));
         result.setCompartmentFactor(document.getDouble(LABEL_COMPARTMENT_FACTOR));
         result.setDeluxeFactor(document.getDouble(LABEL_DELUXE_FACTOR));
@@ -57,11 +55,11 @@ public class MongoDbPriceDAO implements PriceDAO {
     }
 
     @Override
-    public Price findById(String id) {
+    public Price findById(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        Document document = collection.find(eq(LABEL_ID, id)).first();
         return document == null || document.isEmpty() ? null : getPrice(document);
     }
 
@@ -71,12 +69,12 @@ public class MongoDbPriceDAO implements PriceDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
+        document.put(LABEL_ID, price.getId());
         document.put(LABEL_BERTH_FACTOR, price.getBerthFactor());
         document.put(LABEL_COMPARTMENT_FACTOR, price.getCompartmentFactor());
         document.put(LABEL_DELUXE_FACTOR, price.getDeluxeFactor());
         collection.insertOne(document);
 
-        price.setId(document.getObjectId(LABEL_ID).toHexString());
         LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, price.getId()));
         return price;
     }
@@ -86,7 +84,7 @@ public class MongoDbPriceDAO implements PriceDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(price.getId())), new Document("$set", price));
+        collection.findOneAndUpdate(eq(LABEL_ID, price.getId()), new Document("$set", price));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, price.getId()));
         return price;
@@ -97,7 +95,7 @@ public class MongoDbPriceDAO implements PriceDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.deleteOne(eq(LABEL_ID, new ObjectId(price.getId())));
+        collection.deleteOne(eq(LABEL_ID, price.getId()));
 
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, price.getId()));
     }

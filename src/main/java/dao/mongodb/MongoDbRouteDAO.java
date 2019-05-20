@@ -4,9 +4,7 @@ import com.mongodb.client.MongoCollection;
 import dao.RouteDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Route;
-import model.entity.dto.RouteDTO;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,7 @@ public class MongoDbRouteDAO implements RouteDAO {
 
     private static final String COLLECTION_NAME = "routes";
 
-    private static final String LABEL_ID = "_id";
+    private static final String LABEL_ID = "id";
     private static final String LABEL_PRICE_ID = "price_id";
 
     private static final String LABEL_FROM_ID = "from_id";
@@ -53,22 +51,22 @@ public class MongoDbRouteDAO implements RouteDAO {
     }
 
     @Override
-    public Route findById(String id) {
+    public Route findById(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        Document document = collection.find(eq(LABEL_ID, id)).first();
         return document == null || document.isEmpty() ? null : getRoute(document);
     }
 
     @Override
-    public List<Route> findByFromId(String id) {
+    public List<Route> findByFromId(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
         List<Route> routes = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find(eq(LABEL_FROM_ID, new ObjectId(id)))) {
+        for (Document document : collection.find(eq(LABEL_FROM_ID, id))) {
             routes.add(getRoute(document));
         }
 
@@ -81,15 +79,15 @@ public class MongoDbRouteDAO implements RouteDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
-        document.put(LABEL_PRICE_ID, new ObjectId(route.getPriceId()));
-        document.put(LABEL_FROM_ID, new ObjectId(route.getFromId()));
-        document.put(LABEL_TO_ID, new ObjectId(route.getToId()));
+        document.put(LABEL_ID, route.getId());
+        document.put(LABEL_PRICE_ID, route.getPriceId());
+        document.put(LABEL_FROM_ID, route.getFromId());
+        document.put(LABEL_TO_ID, route.getToId());
         document.put(LABEL_FROM_TIME, route.getFromTime());
         document.put(LABEL_TO_TIME, route.getToTime());
         document.put(LABEL_DISTANCE, route.getDistance());
         collection.insertOne(document);
 
-        route.setId(document.getObjectId(LABEL_ID).toHexString());
         LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, route.getId()));
         return route;
     }
@@ -98,15 +96,7 @@ public class MongoDbRouteDAO implements RouteDAO {
     public Route update(Route route) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
-        RouteDTO routeDTO=new RouteDTO();
-        routeDTO.setId(new ObjectId(route.getId()));
-        routeDTO.setFromId(new ObjectId(route.getFromId()));
-        routeDTO.setPriceId(new ObjectId(route.getPriceId()));
-        routeDTO.setDistance(route.getDistance());
-        routeDTO.setToTime(route.getToTime());
-        routeDTO.setToId(new ObjectId(route.getToId()));
-        routeDTO.setFromTime(route.getFromTime());
-        collection.findOneAndUpdate(eq(LABEL_ID, routeDTO.getId()), new Document("$set", routeDTO));
+        collection.findOneAndUpdate(eq(LABEL_ID, route.getId()), new Document("$set", route));
 
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, route.getId()));
@@ -118,19 +108,19 @@ public class MongoDbRouteDAO implements RouteDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.deleteOne(eq(LABEL_ID, new ObjectId(route.getId())));
+        collection.deleteOne(eq(LABEL_ID, route.getId()));
 
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, route.getId()));
     }
 
     private Route getRoute(Document document) {
         Route result = new Route();
-        result.setId(document.getObjectId(LABEL_ID).toHexString());
+        result.setId(document.getLong(LABEL_ID));
 
-        result.setPriceId(document.getObjectId(LABEL_PRICE_ID).toHexString());
+        result.setPriceId(document.getLong(LABEL_PRICE_ID));
 
-        result.setFromId(document.getObjectId(LABEL_FROM_ID).toHexString());
-        result.setToId(document.getObjectId(LABEL_TO_ID).toHexString());
+        result.setFromId(document.getLong(LABEL_FROM_ID));
+        result.setToId(document.getLong(LABEL_TO_ID));
 
         result.setFromTime(document.getString(LABEL_FROM_TIME));
         result.setToTime(document.getString(LABEL_TO_TIME));

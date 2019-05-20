@@ -37,8 +37,8 @@ public class MakeTicketsCommand implements Command {
             return Configuration.getInstance().getConfig(Configuration.LOGIN);
 
         String page = Configuration.getInstance().getConfig(Configuration.ORDER);
-        String from_id = request.getParameter(FROM_PARAMETER);
-        String to_id = request.getParameter(TO_PARAMETER);
+        Long from_id = Long.parseLong(request.getParameter(FROM_PARAMETER));
+        Long to_id = Long.parseLong(request.getParameter(TO_PARAMETER));
         Integer time = Integer.parseInt(request.getParameter(TIME_PARAMETER));
         String dateString = request.getParameter(DATE_ATTRIBUTE);
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);

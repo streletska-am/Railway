@@ -8,16 +8,15 @@ import org.apache.commons.codec.digest.DigestUtils;
 import service.util.LogMessageServiceUtil;
 import util.Configuration;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static util.Configuration.PROFILE_DATABASE;
 
 public class LoginService {
     private static final Logger LOG = Logger.getLogger(LoginService.class.getName());
     private static LoginService INSTANCE;
 
+    private static final String USER_SEQUENCE = "users_seq";
     private static final String USER_DAO = "UserDAO";
 
     private static final String ADD_USER = "addUser()";
@@ -73,8 +72,8 @@ public class LoginService {
         return user;
     }
 
-    User generateId(final User user) {
-        String id = UUID.nameUUIDFromBytes(user.getEmail().getBytes(UTF_8)).toString();
+    private User generateId(final User user) {
+        Long id = factory.createSequenceDao(USER_SEQUENCE).getNextSequenceId();
         user.setId(id);
         return user;
     }

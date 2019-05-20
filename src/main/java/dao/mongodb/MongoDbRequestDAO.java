@@ -5,9 +5,7 @@ import dao.RequestDAO;
 import dao.mysql.TypePlace;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Request;
-import model.entity.dto.RequestDTO;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,7 @@ public class MongoDbRequestDAO implements RequestDAO {
 
     private static final String COLLECTION_NAME = "requests";
 
-    private static final String LABEL_ID = "_id";
+    private static final String LABEL_ID = "id";
     private static final String LABEL_USER_ID = "user_id";
     private static final String LABEL_TRAIN_ID = "train_id";
     private static final String LABEL_TYPE = "type";
@@ -49,11 +47,11 @@ public class MongoDbRequestDAO implements RequestDAO {
     }
 
     @Override
-    public Request findById(String id) {
+    public Request findById(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        Document document = collection.find(eq(LABEL_ID, id)).first();
         return document == null || document.isEmpty() ? null : getRequest(document);
     }
 
@@ -63,13 +61,13 @@ public class MongoDbRequestDAO implements RequestDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
-        document.put(LABEL_USER_ID, new ObjectId(request.getUserId()));
-        document.put(LABEL_TRAIN_ID, new ObjectId(request.getTrainId()));
+        document.put(LABEL_ID, request.getId());
+        document.put(LABEL_USER_ID, request.getUserId());
+        document.put(LABEL_TRAIN_ID, request.getTrainId());
         document.put(LABEL_TYPE, request.getType().toString());
         document.put(LABEL_PRICE, request.getPrice());
         collection.insertOne(document);
 
-        request.setId(document.getObjectId(LABEL_ID).toHexString());
         LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, request.getId()));
         return request;
     }
@@ -78,14 +76,8 @@ public class MongoDbRequestDAO implements RequestDAO {
     public Request update(Request request) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
-        RequestDTO requestDTO=new RequestDTO();
-        requestDTO.setId(new ObjectId(request.getId()));
-        requestDTO.setUserId(new ObjectId(request.getUserId()));
-        requestDTO.setTrainId(new ObjectId(request.getTrainId()));
-        requestDTO.setPrice(request.getPrice());
-        requestDTO.setType(request.getType().toString());
 
-        collection.findOneAndUpdate(eq(LABEL_ID, requestDTO.getId()), new Document("$set", requestDTO));
+        collection.findOneAndUpdate(eq(LABEL_ID, request.getId()), new Document("$set", request));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, request.getId()));
         return request;
@@ -96,16 +88,16 @@ public class MongoDbRequestDAO implements RequestDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.deleteOne(eq(LABEL_ID, new ObjectId(request.getId())));
+        collection.deleteOne(eq(LABEL_ID, request.getId()));
 
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, request.getId()));
     }
 
-    private Request getRequest(Document document){
+    private Request getRequest(Document document) {
         Request request = new Request();
-        request.setId(document.getObjectId(LABEL_ID).toHexString());
-        request.setTrainId(document.getObjectId(LABEL_TRAIN_ID).toHexString());
-        request.setUserId(document.getObjectId(LABEL_USER_ID).toHexString());
+        request.setId(document.getLong(LABEL_ID));
+        request.setTrainId(document.getLong(LABEL_TRAIN_ID));
+        request.setUserId(document.getLong(LABEL_USER_ID));
         request.setPrice(document.get(LABEL_PRICE, Number.class).doubleValue());
         request.setType(TypePlace.valueOf(document.getString(LABEL_TYPE)));
         return request;

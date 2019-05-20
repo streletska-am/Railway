@@ -28,7 +28,7 @@ public class ChangeUsersCommand implements Command {
 
         List<User> users = AdminService.getInstance().getAllUsers();
         for (User user : users) {
-            switch (request.getParameter(user.getId())) {
+            switch (request.getParameter(user.getId().toString())) {
                 case DELETE:
                     AdminService.getInstance().deleteUser(user);
                     break;

@@ -5,7 +5,6 @@ import dao.StationDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.Station;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class MongoDbStationDAO implements StationDAO {
 
     private static final String COLLECTION_NAME = "stations";
 
-    private static final String LABEL_ID = "_id";
+    private static final String LABEL_ID = "id";
     private static final String LABEL_NAME = "name";
 
     private MongoDbStationDAO() {
@@ -44,12 +43,12 @@ public class MongoDbStationDAO implements StationDAO {
     }
 
     @Override
-    public Station findById(String id) {
+    public Station findById(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
-        return document == null || document.isEmpty() ? null :getStation(document);
+        Document document = collection.find(eq(LABEL_ID, id)).first();
+        return document == null || document.isEmpty() ? null : getStation(document);
     }
 
     @Override
@@ -58,10 +57,10 @@ public class MongoDbStationDAO implements StationDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
+        document.put(LABEL_ID, station.getId());
         document.put(LABEL_NAME, station.getName());
         collection.insertOne(document);
 
-        station.setId(document.getObjectId(LABEL_ID).toHexString());
         LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, station.getId()));
         return station;
     }
@@ -71,7 +70,7 @@ public class MongoDbStationDAO implements StationDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(station.getId())), new Document("$set", station));
+        collection.findOneAndUpdate(eq(LABEL_ID, station.getId()), new Document("$set", station));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, station.getId()));
         return station;
@@ -82,7 +81,7 @@ public class MongoDbStationDAO implements StationDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.deleteOne(eq(LABEL_ID, new ObjectId(station.getId())));
+        collection.deleteOne(eq(LABEL_ID, station.getId()));
 
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, station.getId()));
     }
@@ -90,7 +89,7 @@ public class MongoDbStationDAO implements StationDAO {
     private Station getStation(Document document) {
         Station result = new Station();
 
-        result.setId(document.getObjectId(LABEL_ID).toHexString());
+        result.setId(document.getLong(LABEL_ID));
         result.setName(document.getString(LABEL_NAME));
 
         return result;

@@ -5,7 +5,6 @@ import dao.UserDAO;
 import dao.mysql.util.LogMessageDAOUtil;
 import model.entity.User;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class MongoDbUserDAO implements UserDAO {
 
     private static final String COLLECTION_NAME = "users";
 
-    private static final String LABEL_ID = "_id";
+    private static final String LABEL_ID = "id";
     private static final String LABEL_EMAIL = "email";
     private static final String LABEL_PASSWORD = "password";
     private static final String LABEL_NAME = "name";
@@ -49,11 +48,11 @@ public class MongoDbUserDAO implements UserDAO {
     }
 
     @Override
-    public User findById(String id) {
+    public User findById(Long id) {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        Document document = collection.find(eq(LABEL_ID, new ObjectId(id))).first();
+        Document document = collection.find(eq(LABEL_ID, id)).first();
         return document == null || document.isEmpty() ? null : getUser(document);
     }
 
@@ -63,7 +62,7 @@ public class MongoDbUserDAO implements UserDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = collection.find(eq(LABEL_EMAIL, login)).first();
-        return  document==null || document.isEmpty() ? null : getUser(document);
+        return document == null || document.isEmpty() ? null : getUser(document);
     }
 
     @Override
@@ -72,6 +71,7 @@ public class MongoDbUserDAO implements UserDAO {
                 .getCollection(COLLECTION_NAME);
 
         Document document = new Document();
+        document.put(LABEL_ID, user.getId());
         document.put(LABEL_EMAIL, user.getEmail());
         document.put(LABEL_PASSWORD, user.getPassword());
         document.put(LABEL_NAME, user.getName());
@@ -80,7 +80,6 @@ public class MongoDbUserDAO implements UserDAO {
         document.put(LABEL_ADMIN, user.getAdmin());
         collection.insertOne(document);
 
-        user.setId(document.getObjectId(LABEL_ID).toHexString());
         LOG.info(LogMessageDAOUtil.createInfoCreate(COLLECTION_NAME, user.getId()));
         return user;
     }
@@ -90,7 +89,7 @@ public class MongoDbUserDAO implements UserDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.findOneAndUpdate(eq(LABEL_ID, new ObjectId(user.getId())), new Document("$set", user));
+        collection.findOneAndUpdate(eq(LABEL_ID, user.getId()), new Document("$set", user));
 
         LOG.info(LogMessageDAOUtil.createInfoUpdate(COLLECTION_NAME, user.getId()));
         return user;
@@ -101,14 +100,14 @@ public class MongoDbUserDAO implements UserDAO {
         MongoCollection<Document> collection = MongoDbConnectionPool.getInstance().getConnection()
                 .getCollection(COLLECTION_NAME);
 
-        collection.deleteOne(eq(LABEL_ID, new ObjectId(user.getId())));
+        collection.deleteOne(eq(LABEL_ID, user.getId()));
 
         LOG.info(LogMessageDAOUtil.createInfoDelete(COLLECTION_NAME, user.getId()));
     }
 
     private User getUser(Document document) {
         User result = new User();
-        result.setId(document.getObjectId(LABEL_ID).toHexString());
+        result.setId(document.getLong(LABEL_ID));
 
         result.setEmail(document.getString(LABEL_EMAIL));
         result.setPassword(document.getString(LABEL_PASSWORD));

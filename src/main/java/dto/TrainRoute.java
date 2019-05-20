@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrainRoute {
-    private String trainId;
-    private String routeId;
+    private Long trainId;
+    private Long routeId;
 
     private Integer compartmentFree;
     private Integer deluxeFree;

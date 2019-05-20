@@ -13,4 +13,8 @@ public interface DAOFactory {
     UserDAO createUserDAO();
 
     StationDAO createStationDAO();
+
+    default SequenceDao createSequenceDao(String sequenceName) {
+        return () -> null;
+    }
 }

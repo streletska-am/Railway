@@ -25,7 +25,7 @@ public class CancelTicketsCommand implements Command {
 
         List<Ticket> tickets = RequestService.getInstance().findAllTickets();
         for (Ticket ticket : tickets) {
-            if (request.getParameter(ticket.getRequestId()) != null)
+            if (request.getParameter(ticket.getRequestId().toString()) != null)
                 RequestService.getInstance().cancelRequest(ticket);
         }
 
