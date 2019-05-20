@@ -1,6 +1,6 @@
 [
   {
-    "_id": ObjectId("5bfaa39dd52d4832fb9b2344"),
+    "id": 1,
     "email": "root",
     "password": "63a9f0ea7bb98050796b649e85481845",
     "name": "Admin",
@@ -9,7 +9,7 @@
     "admin": true
   },
   {
-    "_id": ObjectId("5bfaa39dd52d4832fb9b2345"),
+    "id": 2,
     "email": "andy97@ukr.net",
     "password": "63a9f0ea7bb98050796b649e85481845",
     "name": "Andrii",
