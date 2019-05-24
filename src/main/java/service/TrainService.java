@@ -101,11 +101,11 @@ public class TrainService {
 
     String formatDate(String date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Date result = null;
+        Date result;
         try {
             result = format.parse(date);
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -118,12 +118,7 @@ public class TrainService {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
 
-        String resultDate = String.format("%02d.%02d.%04d\n%02d:%02d",
-                day, month, year, hour, minutes);
-
-        LOG.info("Format date - " + resultDate);
-        return resultDate;
-
+        return String.format("%02d.%02d.%04d\n%02d:%02d", day, month, year, hour, minutes);
     }
 
     Train reserveCompartmentPlace(Train train) {

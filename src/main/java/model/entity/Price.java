@@ -13,7 +13,8 @@ public class Price {
     private Double deluxeFactor;
     private Double berthFactor;
 
-    public Price(Double compartmentFactor, Double deluxeFactor, Double berthFactor) {
+    public Price(Long id, Double compartmentFactor, Double deluxeFactor, Double berthFactor) {
+        this.id = id;
         this.compartmentFactor = compartmentFactor;
         this.deluxeFactor = deluxeFactor;
         this.berthFactor = berthFactor;

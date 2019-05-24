@@ -14,6 +14,7 @@ import model.entity.Train;
 import model.entity.User;
 import util.Configuration;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -137,7 +138,7 @@ public class RequestService {
             }
             ticket.setMax(max);
             ticket.setTypePlace(parameter);
-            ticket.setPrice(price);
+            ticket.setPrice(new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
             ticket.setUserId(user.getId());
             LOG.info("Add Ticket for USER ID = " + user.getId());
             return ticket;

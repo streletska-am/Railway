@@ -114,7 +114,6 @@
             <version>1.4</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
@@ -126,6 +125,12 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.7.3</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>0.18</version>
         </dependency>
 
     </dependencies>
