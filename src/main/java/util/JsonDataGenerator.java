@@ -2,15 +2,9 @@ package util;
 
 import com.github.javafaker.Faker;
 import com.github.javafaker.Number;
-import dao.AbstractDAOFactory;
-import dao.DAOFactory;
-import dao.DataBase;
-import dao.PriceDAO;
-import dao.RequestDAO;
-import dao.RouteDAO;
-import dao.StationDAO;
-import dao.TrainDAO;
-import dao.UserDAO;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dao.mysql.TypePlace;
 import model.entity.Price;
 import model.entity.Request;
@@ -20,7 +14,13 @@ import model.entity.Train;
 import model.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,9 +33,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static util.Configuration.PROFILE_DATABASE;
-
-public class DatabasePopulator {
+public class JsonDataGenerator {
 
     private static final int STATION_SIZE = 32;
     private static final int ROUTES_INITIAL_SIZE = STATION_SIZE * STATION_SIZE;
@@ -64,23 +62,33 @@ public class DatabasePopulator {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-    public static void main(String[] args) {
-        DataBase dataBase = DataBase.fromValue(Configuration.getInstance().getConfig(PROFILE_DATABASE));
-        DAOFactory daoFactory = AbstractDAOFactory.createDAOFactory(dataBase);
+    private static final Type STATIONS_TYPE = new TypeToken<List<Station>>(){}.getType();
 
-        final StationDAO stationDAO = daoFactory.createStationDAO();
+    private static final Type PRICES_TYPE = new TypeToken<List<Price>>(){}.getType();
+
+    private static final Type ROUTES_TYPE = new TypeToken<List<Route>>(){}.getType();
+
+    private static final Type USERS_TYPE = new TypeToken<List<User>>(){}.getType();
+
+    private static final Type TRAINS_TYPE = new TypeToken<List<Train>>(){}.getType();
+
+    private static final Type REQUESTS_TYPE = new TypeToken<List<Request>>(){}.getType();
+
+    private static final Gson GSON = new Gson();
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
         final List<Station> stations = IntStream.range(1, STATION_SIZE + 1)
                 .collect(createList(STATION_SIZE),
-                        (list, id) -> list.add(stationDAO.create(createStation(id))),
+                        (list, id) -> list.add(createStation(id)),
                         doNothingAfter());
+        writeStringToResource(serializeToJson(stations, STATIONS_TYPE), "json/stations.json");
 
-        final PriceDAO priceDAO = daoFactory.createPriceDAO();
         final List<Price> prices = IntStream.range(1, PRICES_SIZE + 1)
                 .collect(createList(PRICES_SIZE),
-                        (list, id) -> list.add(priceDAO.create(createPrice(id))),
+                        (list, id) -> list.add(createPrice(id)),
                         doNothingAfter());
+        writeStringToResource(serializeToJson(prices, PRICES_TYPE), "json/prices.json");
 
-        final RouteDAO routeDAO = daoFactory.createRouteDAO();
         final List<Route> routesTemp = IntStream.range(1, ROUTES_INITIAL_SIZE + 1)
                 .collect(createList(ROUTES_INITIAL_SIZE),
                         (list, id) -> {
@@ -88,42 +96,45 @@ public class DatabasePopulator {
                             Price price = prices.get(id % PRICES_SIZE);
                             Station from = stations.get(id % STATION_SIZE);
                             Station to = stations.get(fakeNumber.numberBetween(0, STATION_SIZE - 1));
-                            Route route = routeDAO.create(createRoute(id, price, from, to));
+                            Route route = createRoute(id, price, from, to);
                             list.add(route);
                         },
                         doNothingAfter());
         final List<Route> routes = routesTemp.stream()
                 .filter(route -> !route.getFromId().equals(route.getToId()))
                 .collect(Collectors.toList());
+        writeStringToResource(serializeToJson(routes, ROUTES_TYPE), "json/routes.json");
 
-        final UserDAO userDAO = daoFactory.createUserDAO();
-        userDAO.create(createUser(0, true));
         final List<User> users = IntStream.range(1, routes.size() + 1)
-                .collect(createList(routes.size()),
-                        (list, id) -> list.add(userDAO.create(createUser(id, false))),
+                .collect(createList(routes.size() + 1),
+                        (list, id) -> list.add(createUser(id, false)),
                         doNothingAfter());
+        users.add(createUser(0, true));
+        writeStringToResource(serializeToJson(users, USERS_TYPE), "json/users.json");
 
-        final TrainDAO trainDAO = daoFactory.createTrainDAO();
         final List<Train> trains = IntStream.range(1, routes.size() + 1)
                 .collect(createList(TRAINS_SIZE),
                         (list, id) -> {
                             Route route = routes.get(id - 1);
                             long trainId = id % TRAINS_SIZE + 1;
                             if (list.size() <= TRAINS_SIZE && !containsTrainId(trainId, list)) {
-                                list.add(trainDAO.create(createTrain(trainId, route)));
+                                list.add(createTrain(trainId, route));
                             }
                         },
                         doNothingAfter());
+        writeStringToResource(serializeToJson(trains, TRAINS_TYPE), "json/trains.json");
 
-        final RequestDAO requestDAO = daoFactory.createRequestDAO();
-        IntStream.range(1, routes.size() + 1)
-                .forEach(id -> {
-                    User user = users.get(id - 1);
-                    Train train = trains.get(id % TRAINS_SIZE);
-                    Price price = prices.get(id % PRICES_SIZE);
-                    Route route = routes.get(id - 1);
-                    requestDAO.create(createRequest(id, user, train, price, route, TypePlace.get(id % TypePlace.count())));
-                });
+        final List<Request> requests = IntStream.range(1, routes.size() + 1)
+                .collect(createList(users.size() - 1),
+                        (list, id) -> {
+                            User user = users.get(id - 1);
+                            Train train = trains.get(id % TRAINS_SIZE);
+                            Price price = prices.get(id % PRICES_SIZE);
+                            Route route = routes.get(id - 1);
+                            list.add(createRequest(id, user, train, price, route, TypePlace.get(id % TypePlace.count())));
+                        },
+                        doNothingAfter());
+        writeStringToResource(serializeToJson(requests, REQUESTS_TYPE), "json/requests.json");
     }
 
     private static User createUser(long id, boolean isAdmin) {
@@ -206,5 +217,14 @@ public class DatabasePopulator {
 
     private static <T> BiConsumer<ArrayList<T>, ArrayList<T>> doNothingAfter() {
         return (x1, x2) -> {};
+    }
+
+    private static String serializeToJson(Object object, Type type) {
+        return GSON.toJson(object, type);
+    }
+
+    private static void writeStringToResource(String value, String resource) throws URISyntaxException, IOException {
+        Path path = Paths.get(Resources.getResource(resource).toURI());
+        Files.write(path, value.getBytes());
     }
 }
