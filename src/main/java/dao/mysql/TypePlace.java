@@ -20,11 +20,11 @@ public enum TypePlace {
         }
     };
 
-    public static TypePlace get(int index) {
-        return TypePlace.values()[index];
-    }
+    public static final int SIZE = 3;
 
-    public static int count() {
-        return TypePlace.values().length;
+    private static final TypePlace[] VALUES = TypePlace.values();
+
+    public static TypePlace get(int index) {
+        return VALUES[index];
     }
 }
