@@ -1,5 +1,10 @@
 package dao.mysql;
 
+import model.entity.Price;
+import model.entity.Route;
+
+import java.math.BigDecimal;
+
 public enum TypePlace {
     B {
         @Override
@@ -26,5 +31,20 @@ public enum TypePlace {
 
     public static TypePlace get(int index) {
         return VALUES[index];
+    }
+
+    public double calculatePrice(Price price, Route route) {
+        double value;
+        switch (this) {
+            case C:
+                value = price.getCompartmentFactor() * route.getDistance();
+                break;
+            case B:
+                value = price.getBerthFactor() * route.getDistance();
+                break;
+            default:
+                value = price.getDeluxeFactor() * route.getDistance();
+        }
+        return new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 }
