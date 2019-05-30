@@ -60,7 +60,7 @@ public class SqlDataGenerator {
 
     private static final String TYPICAL_PASSWORD_HASH = md5Hex("root");
 
-    private static final String TYPICAL_PHONE_NUMBER = "(012) 345-67-89";
+    private static final String TYPICAL_PHONE_NUMBER = "0123456789";
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
