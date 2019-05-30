@@ -2,8 +2,12 @@ package util;
 
 import com.github.javafaker.Faker;
 import com.github.javafaker.Number;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.JdbcEscape;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
+import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 import dao.mysql.TypePlace;
 import model.entity.Price;
 import model.entity.Request;
@@ -16,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -32,7 +35,7 @@ import java.util.stream.IntStream;
 import static java.util.Locale.ENGLISH;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-public class JsonDataGenerator {
+public class SqlDataGenerator {
 
     private static final int STATIONS_SIZE = 128;
     private static final int UNFILTERED_ROUTES_SIZE = STATIONS_SIZE * STATIONS_SIZE;
@@ -61,31 +64,17 @@ public class JsonDataGenerator {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-    private static final Type STATIONS_TYPE = new TypeToken<List<Station>>() {}.getType();
+    private static final String STATIONS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\stations_%d.sql";
 
-    private static final Type PRICES_TYPE = new TypeToken<List<Price>>() {}.getType();
+    private static final String PRICES_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\prices_%d.sql";
 
-    private static final Type ROUTES_TYPE = new TypeToken<List<Route>>() {}.getType();
+    private static final String ROUTES_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\routes_%d.sql";
 
-    private static final Type USERS_TYPE = new TypeToken<List<User>>() {}.getType();
+    private static final String TRAINS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\trains_%d.sql";
 
-    private static final Type TRAINS_TYPE = new TypeToken<List<Train>>() {}.getType();
+    private static final String USERS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\users_%d.sql";
 
-    private static final Type REQUESTS_TYPE = new TypeToken<List<Request>>() {}.getType();
-
-    private static final String STATIONS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\stations_%d.json";
-
-    private static final String PRICES_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\prices_%d.json";
-
-    private static final String ROUTES_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\routes_%d.json";
-
-    private static final String TRAINS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\trains_%d.json";
-
-    private static final String USERS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\users_%d.json";
-
-    private static final String REQUESTS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\json\\requests_%d.json";
-
-    private static final Gson GSON = new Gson();
+    private static final String REQUESTS_FILE_NAME_FORMAT = "C:\\Users\\Public\\Documents\\sql\\requests_%d.sql";
 
     private static final int FAKERS_SIZE = UNFILTERED_ROUTES_SIZE;
 
@@ -103,45 +92,138 @@ public class JsonDataGenerator {
         System.out.println("Initialized fakers with size of " + FAKERS_SIZE);
         System.out.println();
 
+        DbSpec dbSpec = new DbSpec();
+        DbSchema dbSchema = dbSpec.addSchema("railway_system");
+
+        DbTable stationTable = dbSchema.addTable("station");
+        DbColumn stationIdColumn = stationTable.addColumn("id", "number", null);
+        DbColumn stationNameColumn = stationTable.addColumn("name", "varchar", 100);
+
+        DbTable priceTable = dbSchema.addTable("price");
+        DbColumn priceIdColumn = priceTable.addColumn("id", "number", null);
+        DbColumn priceCompartmentFactorColumn = priceTable.addColumn("compartmentFactor", "number", null);
+        DbColumn priceDeluxeFactorColumn = priceTable.addColumn("deluxeFactor", "number", null);
+        DbColumn priceBerthFactorColumn = priceTable.addColumn("berthFactor", "number", null);
+
+        DbTable routeTable = dbSchema.addTable("route");
+        DbColumn routeIdColumn = routeTable.addColumn("id", "number", null);
+        DbColumn routeFromTimeColumn = routeTable.addColumn("fromTime", "varchar", null);
+        DbColumn routeToTimeColumn = routeTable.addColumn("toTime", "varchar", null);
+        DbColumn routePriceIdColumn = routeTable.addColumn("priceId", "number", null);
+        DbColumn routeFromIdColumn = routeTable.addColumn("fromId", "number", null);
+        DbColumn routeToIdColumn = routeTable.addColumn("toId", "number", null);
+        DbColumn routeDistanceColumn = routeTable.addColumn("distance", "number", null);
+
+        DbTable trainTable = dbSchema.addTable("train");
+        DbColumn trainIdColumn = trainTable.addColumn("id", "number", null);
+        DbColumn trainRouteIdColumn = trainTable.addColumn("routeId", "number", null);
+        DbColumn trainCompartmentFreeColumn = trainTable.addColumn("compartmentFree", "number", null);
+        DbColumn trainDeluxeFreeColumn = trainTable.addColumn("deluxeFree", "number", null);
+        DbColumn trainBerthFreeColumn = trainTable.addColumn("berthFree", "number", null);
+
+        DbTable userTable = dbSchema.addTable("user");
+        DbColumn userIdColumn = userTable.addColumn("id", "number", null);
+        DbColumn userEmailColumn = userTable.addColumn("email", "varchar", 100);
+        DbColumn userPasswordColumn = userTable.addColumn("password", "varchar", 36);
+        DbColumn userNameColumn = userTable.addColumn("name", "varchar", 45);
+        DbColumn userSurnameColumn = userTable.addColumn("surname", "varchar", 45);
+        DbColumn userPhoneColumn = userTable.addColumn("phone", "varchar", 12);
+        DbColumn userIsAdminColumn = userTable.addColumn("admin", "number", null);
+
+        DbTable requestTable = dbSchema.addTable("request");
+        DbColumn requestIdColumn = requestTable.addColumn("id", "number", null);
+        DbColumn requestUserIdColumn = requestTable.addColumn("userId", "number", null);
+        DbColumn requestTrainIdColumn = requestTable.addColumn("trainId", "number", null);
+        DbColumn requestTypeColumn = requestTable.addColumn("type", "varchar", 1);
+        DbColumn requestPriceColumn = requestTable.addColumn("price", "number", null);
+
         List<Station> stations = generateStations(iteration, fakers);
         System.out.println("Generated stations with size of " + stations.size());
         String stationsFileName = String.format(STATIONS_FILE_NAME_FORMAT, iteration);
-        serializeToJson(stations, STATIONS_TYPE, stationsFileName);
+        for (Station station : stations) {
+            serializeToSql(new InsertQuery(stationTable)
+                    .addColumn(stationIdColumn, station.getId())
+                    .addColumn(stationNameColumn, station.getName().replace('\'', ' '))
+                    .toString(), stationsFileName);
+        }
         System.out.println("Successfully imported stations to " + stationsFileName);
         System.out.println();
 
         List<Price> prices = generatePrices(iteration, fakers);
         System.out.println("Generated prices with size of " + prices.size());
         String pricesFileName = String.format(PRICES_FILE_NAME_FORMAT, iteration);
-        serializeToJson(prices, PRICES_TYPE, pricesFileName);
+        for (Price price : prices) {
+            serializeToSql(new InsertQuery(priceTable)
+                    .addColumn(priceIdColumn, price.getId())
+                    .addColumn(priceCompartmentFactorColumn, price.getCompartmentFactor())
+                    .addColumn(priceDeluxeFactorColumn, price.getDeluxeFactor())
+                    .addColumn(priceBerthFactorColumn, price.getBerthFactor())
+                    .toString(), pricesFileName);
+        }
         System.out.println("Successfully imported prices to " + pricesFileName);
         System.out.println();
 
         List<Route> routes = generateRoutes(iteration, fakers);
         System.out.println("Generated filtered routes with size of " + routes.size());
         String routesFileName = String.format(ROUTES_FILE_NAME_FORMAT, iteration);
-        serializeToJson(routes, ROUTES_TYPE, routesFileName);
+        for (Route route : routes) {
+            serializeToSql(new InsertQuery(routeTable)
+                    .addColumn(routeIdColumn, route.getId())
+                    .addColumn(routeFromTimeColumn, route.getFromTime())
+                    .addColumn(routeToTimeColumn, route.getToTime())
+                    .addColumn(routePriceIdColumn, route.getPriceId())
+                    .addColumn(routeFromIdColumn, route.getFromId())
+                    .addColumn(routeToIdColumn, route.getToId())
+                    .addColumn(routeDistanceColumn, route.getDistance())
+                    .toString(), routesFileName);
+        }
         System.out.println("Successfully imported filtered routes to " + routesFileName);
         System.out.println();
 
         Map<Integer, Train> trainByIdMap = generateTrains(iteration, routes.size(), fakers);
         System.out.println("Generated trains with size of " + trainByIdMap.size());
         String trainsFileName = String.format(TRAINS_FILE_NAME_FORMAT, iteration);
-        serializeToJson(trainByIdMap.values(), TRAINS_TYPE, trainsFileName);
+        for (Train train : trainByIdMap.values()) {
+            serializeToSql(new InsertQuery(trainTable)
+                    .addColumn(trainIdColumn, train.getId())
+                    .addColumn(trainRouteIdColumn, train.getRouteId())
+                    .addColumn(trainCompartmentFreeColumn, train.getCompartmentFree())
+                    .addColumn(trainDeluxeFreeColumn, train.getDeluxeFree())
+                    .addColumn(trainBerthFreeColumn, train.getBerthFree())
+                    .toString(), trainsFileName);
+        }
         System.out.println("Successfully imported trains to " + trainsFileName);
         System.out.println();
 
         List<User> users = generateUsers(iteration, routes.size(), fakers);
         System.out.println("Generated users with size of " + users.size());
         String usersFileName = String.format(USERS_FILE_NAME_FORMAT, iteration);
-        serializeToJson(users, USERS_TYPE, usersFileName);
+        for (User user : users) {
+            serializeToSql(new InsertQuery(userTable)
+                    .addColumn(userIdColumn, user.getId())
+                    .addColumn(userEmailColumn, user.getEmail())
+                    .addColumn(userPasswordColumn, user.getPassword())
+                    .addColumn(userNameColumn, user.getName())
+                    .addColumn(userSurnameColumn, user.getSurname())
+                    .addColumn(userPhoneColumn, user.getPhone())
+                    .addColumn(userIsAdminColumn, user.getAdmin())
+                    .toString(), usersFileName);
+        }
         System.out.println("Successfully imported users to " + usersFileName);
         System.out.println();
 
         List<Request> requests = generateRequests(iteration, prices, routes);
         System.out.println("Generated requests with size of " + requests.size());
         String requestsFileName = String.format(REQUESTS_FILE_NAME_FORMAT, iteration);
-        serializeToJson(requests, REQUESTS_TYPE, requestsFileName);
+        for (Request request : requests) {
+            serializeToSql(new InsertQuery(requestTable)
+                    .addColumn(requestIdColumn, request.getId())
+                    .addColumn(requestUserIdColumn, request.getUserId())
+                    .addColumn(requestTrainIdColumn, request.getTrainId())
+                    .addColumn(requestTypeColumn, request.getType())
+                    .addColumn(requestPriceColumn, request.getPrice())
+                    .toString(), requestsFileName);
+        }
         System.out.println("Successfully imported requests to " + requestsFileName);
         System.out.println();
     }
@@ -271,7 +353,7 @@ public class JsonDataGenerator {
     }
 
     private static int toMaxId(int iteration, int size) {
-        return toOffset( iteration + 1, size);
+        return toOffset(iteration + 1, size);
     }
 
     private static int toOffset(int iteration, int size) {
@@ -313,15 +395,15 @@ public class JsonDataGenerator {
         return new Request(id, userId, trainId, typePlace, price);
     }
 
-    private static void serializeToJson(Object object, Type type, String fileName) throws IOException {
+    private static void serializeToSql(String statement, String fileName) throws IOException {
         Path path = Paths.get(fileName);
         File file = path.toFile();
-        if(!file.exists()){
+        if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
         }
-        try (Writer writer = new FileWriter(file)) {
-            GSON.toJson(object, type, writer);
+        try (Writer writer = new FileWriter(file, true)) {
+            writer.append(statement).append(';').append(System.getProperty("line.separator"));
         }
     }
 }
