@@ -93,49 +93,49 @@ public class SqlDataGenerator {
         System.out.println();
 
         DbSpec dbSpec = new DbSpec();
-        DbSchema dbSchema = dbSpec.addSchema("railway_system");
+        DbSchema dbSchema = dbSpec.addSchema("`railway_system`");
 
-        DbTable stationTable = dbSchema.addTable("station");
-        DbColumn stationIdColumn = stationTable.addColumn("id", "number", null);
-        DbColumn stationNameColumn = stationTable.addColumn("name", "varchar", 100);
+        DbTable stationTable = dbSchema.addTable("`station`");
+        DbColumn stationIdColumn = stationTable.addColumn("`id`", "number", null);
+        DbColumn stationNameColumn = stationTable.addColumn("`name`", "varchar", 100);
 
-        DbTable priceTable = dbSchema.addTable("price");
-        DbColumn priceIdColumn = priceTable.addColumn("id", "number", null);
-        DbColumn priceCompartmentFactorColumn = priceTable.addColumn("compartmentFactor", "number", null);
-        DbColumn priceDeluxeFactorColumn = priceTable.addColumn("deluxeFactor", "number", null);
-        DbColumn priceBerthFactorColumn = priceTable.addColumn("berthFactor", "number", null);
+        DbTable priceTable = dbSchema.addTable("`price`");
+        DbColumn priceIdColumn = priceTable.addColumn("`id`", "number", null);
+        DbColumn priceCompartmentFactorColumn = priceTable.addColumn("`compartmentFactor`", "number", null);
+        DbColumn priceDeluxeFactorColumn = priceTable.addColumn("`deluxeFactor`", "number", null);
+        DbColumn priceBerthFactorColumn = priceTable.addColumn("`berthFactor`", "number", null);
 
-        DbTable routeTable = dbSchema.addTable("route");
-        DbColumn routeIdColumn = routeTable.addColumn("id", "number", null);
-        DbColumn routeFromTimeColumn = routeTable.addColumn("fromTime", "varchar", null);
-        DbColumn routeToTimeColumn = routeTable.addColumn("toTime", "varchar", null);
-        DbColumn routePriceIdColumn = routeTable.addColumn("priceId", "number", null);
-        DbColumn routeFromIdColumn = routeTable.addColumn("fromId", "number", null);
-        DbColumn routeToIdColumn = routeTable.addColumn("toId", "number", null);
-        DbColumn routeDistanceColumn = routeTable.addColumn("distance", "number", null);
+        DbTable routeTable = dbSchema.addTable("`route`");
+        DbColumn routeIdColumn = routeTable.addColumn("`id`", "number", null);
+        DbColumn routeFromTimeColumn = routeTable.addColumn("`fromTime`", "varchar", null);
+        DbColumn routeToTimeColumn = routeTable.addColumn("`toTime`", "varchar", null);
+        DbColumn routePriceIdColumn = routeTable.addColumn("`priceId`", "number", null);
+        DbColumn routeFromIdColumn = routeTable.addColumn("`fromId`", "number", null);
+        DbColumn routeToIdColumn = routeTable.addColumn("`toId`", "number", null);
+        DbColumn routeDistanceColumn = routeTable.addColumn("`distance`", "number", null);
 
-        DbTable trainTable = dbSchema.addTable("train");
-        DbColumn trainIdColumn = trainTable.addColumn("id", "number", null);
-        DbColumn trainRouteIdColumn = trainTable.addColumn("routeId", "number", null);
-        DbColumn trainCompartmentFreeColumn = trainTable.addColumn("compartmentFree", "number", null);
-        DbColumn trainDeluxeFreeColumn = trainTable.addColumn("deluxeFree", "number", null);
-        DbColumn trainBerthFreeColumn = trainTable.addColumn("berthFree", "number", null);
+        DbTable trainTable = dbSchema.addTable("`train`");
+        DbColumn trainIdColumn = trainTable.addColumn("`id`", "number", null);
+        DbColumn trainRouteIdColumn = trainTable.addColumn("`routeId`", "number", null);
+        DbColumn trainCompartmentFreeColumn = trainTable.addColumn("`compartmentFree`", "number", null);
+        DbColumn trainDeluxeFreeColumn = trainTable.addColumn("`deluxeFree`", "number", null);
+        DbColumn trainBerthFreeColumn = trainTable.addColumn("`berthFree`", "number", null);
 
-        DbTable userTable = dbSchema.addTable("user");
-        DbColumn userIdColumn = userTable.addColumn("id", "number", null);
-        DbColumn userEmailColumn = userTable.addColumn("email", "varchar", 100);
-        DbColumn userPasswordColumn = userTable.addColumn("password", "varchar", 36);
-        DbColumn userNameColumn = userTable.addColumn("name", "varchar", 45);
-        DbColumn userSurnameColumn = userTable.addColumn("surname", "varchar", 45);
-        DbColumn userPhoneColumn = userTable.addColumn("phone", "varchar", 12);
-        DbColumn userIsAdminColumn = userTable.addColumn("admin", "number", null);
+        DbTable userTable = dbSchema.addTable("`user`");
+        DbColumn userIdColumn = userTable.addColumn("`id`", "number", null);
+        DbColumn userEmailColumn = userTable.addColumn("`email`", "varchar", 100);
+        DbColumn userPasswordColumn = userTable.addColumn("`password`", "varchar", 36);
+        DbColumn userNameColumn = userTable.addColumn("`name`", "varchar", 45);
+        DbColumn userSurnameColumn = userTable.addColumn("`surname`", "varchar", 45);
+        DbColumn userPhoneColumn = userTable.addColumn("`phone`", "varchar", 12);
+        DbColumn userIsAdminColumn = userTable.addColumn("`admin`", "number", null);
 
-        DbTable requestTable = dbSchema.addTable("request");
-        DbColumn requestIdColumn = requestTable.addColumn("id", "number", null);
-        DbColumn requestUserIdColumn = requestTable.addColumn("userId", "number", null);
-        DbColumn requestTrainIdColumn = requestTable.addColumn("trainId", "number", null);
-        DbColumn requestTypeColumn = requestTable.addColumn("type", "varchar", 1);
-        DbColumn requestPriceColumn = requestTable.addColumn("price", "number", null);
+        DbTable requestTable = dbSchema.addTable("`request`");
+        DbColumn requestIdColumn = requestTable.addColumn("`id`", "number", null);
+        DbColumn requestUserIdColumn = requestTable.addColumn("`userId`", "number", null);
+        DbColumn requestTrainIdColumn = requestTable.addColumn("`trainId`", "number", null);
+        DbColumn requestTypeColumn = requestTable.addColumn("`type`", "varchar", 1);
+        DbColumn requestPriceColumn = requestTable.addColumn("`price`", "number", null);
 
         List<Station> stations = generateStations(iteration, fakers);
         System.out.println("Generated stations with size of " + stations.size());
