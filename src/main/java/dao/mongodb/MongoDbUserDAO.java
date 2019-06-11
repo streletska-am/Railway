@@ -39,7 +39,7 @@ public class MongoDbUserDAO implements UserDAO {
                 .getCollection(COLLECTION_NAME);
         List<User> users = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             users.add(getUser(document));
         }
 

@@ -38,7 +38,7 @@ public class MongoDbTrainDAO implements TrainDAO {
                 .getCollection(COLLECTION_NAME);
         List<Train> trains = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             trains.add(getTrain(document));
         }
 

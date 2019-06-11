@@ -46,7 +46,7 @@ public class MongoDbPriceDAO implements PriceDAO {
                 .getCollection(COLLECTION_NAME);
         List<Price> prices = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             prices.add(getPrice(document));
         }
 

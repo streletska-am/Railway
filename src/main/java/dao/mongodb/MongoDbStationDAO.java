@@ -34,7 +34,7 @@ public class MongoDbStationDAO implements StationDAO {
                 .getCollection(COLLECTION_NAME);
         List<Station> stations = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             stations.add(getStation(document));
         }
 

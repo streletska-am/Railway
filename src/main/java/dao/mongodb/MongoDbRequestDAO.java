@@ -38,7 +38,7 @@ public class MongoDbRequestDAO implements RequestDAO {
                 .getCollection(COLLECTION_NAME);
         List<Request> requests = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             requests.add(getRequest(document));
         }
 

@@ -42,7 +42,7 @@ public class MongoDbRouteDAO implements RouteDAO {
                 .getCollection(COLLECTION_NAME);
         List<Route> routes = new ArrayList<>((int) collection.count());
 
-        for (Document document : collection.find()) {
+        for (Document document : collection.find().limit(12)) {
             routes.add(getRoute(document));
         }
 
